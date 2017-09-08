@@ -1,0 +1,48 @@
+Metodos de las potencias - Power Iteration
+    * Par autoValor, autoVector O(a1/a2)
+    ----------------------------------------
+    def power_iteration(A):
+        # Ideally choose a random vector
+        # To decrease the chance that our vector
+        # Is orthogonal to the eigenvector
+        b_k = np.random.rand(A.shape[0])
+
+        for _ in range(num_simulations):
+            # calculate the matrix-by-vector product Ab
+            b_k1 = np.dot(A, b_k)
+
+            # calculate the norm
+            b_k1_norm = np.linalg.norm(b_k1)
+
+            # re normalize the vector
+            b_k = b_k1 / b_k1_norm
+
+        return b_k
+    -----------------------------------------------
+    * Para el segundo paso: B=A − (λ1/|v1|²)(v1)(v1)T
+                (https://math.stackexchange.com/questions/768882/power-method-for-finding-all-eigenvectors)
+                Tiene que ser simetrica porque los autovectores deben ser ortogonales
+
+Metodos de las potencias inversas con traslacion
+obtener un autovalor con una aproximacion inicial
+
+Metodos de las potencias inversas - Inverse Iteration
+It allows one to find an approximate eigenvector when an approximation to a corresponding eigenvalue is already known. O(n³)
+
+Metodo de Givens
+Elementary plane rotations are one of the building blocks of numerical linear algebra
+and are employed in reducing matrices to condensed form for eigenvalue computations
+and during the QR algorithm
+
+Metodo de Jacobi
+    * Matriz simetrica
+    * O(n⁴*logB) (http://www.cas.mcmaster.ca/~qiao/publications/TQ12.pdf)
+
+Metodo de HouseHolder
+    * Genera 0 fuera de la diagonales
+
+Factorizacion QR
+    * Parecido a HouseHolder
+
+    QR Aceleracion mediante traslaciones
+        * Se busca el valor de la traslacion en los valores de abajo a la derecha
