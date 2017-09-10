@@ -2,6 +2,7 @@ from os import path
 import argparse
 from PIL import Image
 import numpy as np
+import matplotlib.pyplot as plt
 
 parser = argparse.ArgumentParser(description="Face recognizer. Receives an image and identifies it in a database.")
 parser.add_argument("images", nargs="+", help="Images to recognize", type=str)
@@ -28,12 +29,12 @@ print("Read bytes of %i images" % len(images))
 # TODO: Verify all images have the same size
 
 # Normalize data
-average_pixels = np.mean(images, 0)     # Average value for each pixel
+mean_pixels = np.mean(images, 0)     # Average value for each pixel
 # TODO: Dividir por varianza?
 
 for i in range(len(images)):
     for j in range(len(images[i])):
-        images[i][j] -= average_pixels[j]
+        images[i][j] -= mean_pixels[j]
 
 # Calculate covariance matrix
 # cov = np.cov(images, rowvar=True)
@@ -53,3 +54,18 @@ for i in range(len(images)):
         projections[i].append(np.dot(images[i], eigenvectors[j]))
 
 print(projections)
+
+# Show mean face
+fig, axes = plt.subplots(1,1)
+axes.imshow(np.reshape(mean_pixels,[112,92]),cmap='gray')
+fig.suptitle('Mean face')
+fig.show()
+
+# Show all eigenfaces
+for eigenface in eigenvectors:
+    fig, axes = plt.subplots(1, 1)
+    axes.imshow(np.reshape(eigenface, [112, 92]), cmap='gray')
+    fig.suptitle('Autocara')
+    fig.show()
+
+print(2)
