@@ -1,3 +1,5 @@
 .idea/
 __pycache__/
 output*.txt
+
+mna/tp01/\.DS_Store
