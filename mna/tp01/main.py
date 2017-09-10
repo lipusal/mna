@@ -41,6 +41,15 @@ for i in range(len(images)):
 
 _, __, eigenvectors = np.linalg.svd(images, full_matrices=False)
 
-
-
+# TODO: Pick which eigenvectors to keep
+eigenvectors = eigenvectors[:]
 print(len(eigenvectors))
+
+# Project each image to all chosen eigenvectors
+projections = []
+for i in range(len(images)):
+    projections.append([])
+    for j in range(len(eigenvectors)):
+        projections[i].append(np.dot(images[i], eigenvectors[j]))
+
+print(projections)
