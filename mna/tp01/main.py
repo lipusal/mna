@@ -9,6 +9,8 @@ parser = argparse.ArgumentParser(description="Face recognizer. Receives an image
 parser.add_argument("images", nargs="+", help="Images to recognize", type=str)
 parser.add_argument("--verbose", "-v", help="Print verbose information while running", action="store_true",
                     default=False)
+parser.add_argument("--cutoff", "-c", help="Percentage of captured variance at which to cut off using eigenvectors. "
+                                           "Decimal in (0, 1]. Default is 0.9", type=int, default=0.9)
 args = parser.parse_args()
 
 if args.images is None:
@@ -39,10 +41,29 @@ for i in range(len(images)):
 # cov = np.cov(images, rowvar=True)
 # eigenvalues, eigenvectors = np.linalg.eig(cov)
 
-_, __, eigenvectors = np.linalg.svd(images, full_matrices=False)
+_, singular_values, eigenvectors = np.linalg.svd(images, full_matrices=False)
 
-# TODO: Pick which eigenvectors to keep
-eigenvectors = eigenvectors[:]
+eigenvalues = singular_values ** 2
+
+cummulative_sum = 0
+eigenvalues_sum = sum(eigenvalues)
+
+# Get enough eigenvalues to capture at least the specified variance
+used_eigenvectors = 0
+for i in range(len(eigenvectors)):
+    used_eigenvectors += 1
+    cummulative_sum += eigenvalues[i]
+    if cummulative_sum/eigenvalues_sum >= args.cutoff:
+        break
+
+if args.verbose:
+    if cummulative_sum / eigenvalues_sum < args.cutoff:
+        print("[WARN]: Couldn't capture desired variance (%g) with all %i eigenvectors, continuing"
+              % (args.cutoff, len(eigenvectors)))
+    else:
+        print("Captured desired variance (%g) with %i/%i eigenvectors" % (args.cutoff, used_eigenvectors, len(eigenvectors)))
+
+eigenvectors = eigenvectors[0:used_eigenvectors]
 
 # Project each image to all chosen eigenvectors
 projections = []
