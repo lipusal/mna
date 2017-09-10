@@ -1,4 +1,6 @@
-TODO PSA:
+TODO
+
+PSA:
 -Sacar Autovalores y Autovectores:
 	* Householder
 	* Givens
@@ -7,5 +9,5 @@ TODO PSA:
 -Ver si hay otras implementaciones	
 -Elegir los m autovalores mayores (iterar hasta hallar el optimo?).
 
-TODO KPSA:
+KPSA:
 -Investigar sobre el tema
