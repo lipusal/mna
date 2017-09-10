@@ -1,9 +1,11 @@
 TODO PSA:
--Normalizar los datos.
--Sacar matriz de covarianza.
--Sacar Autovalores y Autovectores.
--Elegir los m autovalores mayores.
--Proyectar las imagenes respecto de los Autovectores.
+-Sacar Autovalores y Autovectores:
+	* Householder
+	* Givens
+	* Gram Schmidt
+	* Ver que onda lo de Heisenberg
+-Ver si hay otras implementaciones	
+-Elegir los m autovalores mayores (iterar hasta hallar el optimo?).
 
 TODO KPSA:
--Hacer el TODO
+-Investigar sobre el tema
