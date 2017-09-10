@@ -1,0 +1,9 @@
+TODO PSA:
+-Normalizar los datos.
+-Sacar matriz de covarianza.
+-Sacar Autovalores y Autovectores.
+-Elegir los m autovalores mayores.
+-Proyectar las imagenes respecto de los Autovectores.
+
+TODO KPSA:
+-Hacer el TODO
