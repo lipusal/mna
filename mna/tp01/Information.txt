@@ -42,7 +42,25 @@ Metodo de HouseHolder
     * Genera 0 fuera de la diagonales
 
 Factorizacion QR
+    Ejemplos: http://www.math.cornell.edu/~web6140/TopTenAlgorithms/QRalgorithm.html
+
     * Parecido a HouseHolder
+    *The QR algorithm only converges using Wilkinson-Shift strategie!
+        (https://math.stackexchange.com/questions/1262363/convergence-of-qr-algorithm-to-upper-triangular-matrix)
+
+    Francis Algorithm
+        * http://cavern.uark.edu/~arnold/4353/Francis.pdf
+        * http://www.math.wsu.edu/faculty/watkins/slides/ilas10.pdf
 
     QR Aceleracion mediante traslaciones
+        * Tridiagonalizar con HouseHolder
         * Se busca el valor de la traslacion en los valores de abajo a la derecha
+
+
+Kernel:
+    *Parameter selection (http://www.csie.ntu.edu.tw/~cjlin/talks/mlss_kyoto.pdf , pag34)
+
+    Test BRF Kernel (exp)
+        Encontrar C and Y https://github.com/arnaudsj/libsvm/blob/master/tools/easy.py
+
+averiguar sobre RRQR
