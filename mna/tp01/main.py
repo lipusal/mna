@@ -1,4 +1,4 @@
-from os import path
+from os import path, listdir
 import argparse
 from PIL import Image
 import numpy as np
@@ -6,7 +6,9 @@ import matplotlib.pyplot as plt
 from sklearn import svm
 
 parser = argparse.ArgumentParser(description="Face recognizer. Receives an image and identifies it in a database.")
-parser.add_argument("images", nargs="+", help="Images to recognize", type=str)
+parser.add_argument("directory", help="Directory from which to load images. Directory should have further "
+                                      "subdirectories, where each subdirectory belongs to a different individual. Each "
+                                      "individual should have the same amount of pictures.", type=str)
 parser.add_argument("--verbose", "-v", help="Print verbose information while running", action="store_true",
                     default=False)
 parser.add_argument("--cutoff", "-c", help="Percentage of captured variance at which to cut off using eigenvectors. "
@@ -14,11 +16,15 @@ parser.add_argument("--cutoff", "-c", help="Percentage of captured variance at w
 parser.add_argument("--time", "-t", help="Print elapsed program time", action="store_true", default=False)
 args = parser.parse_args()
 
-if args.images is None:
-    print("At least 1 image is required. Aborting.")
+# Normalize and validate directory
+directory = path.normpath(args.directory)
+if not path.exists(directory) or not path.isdir(directory):
+    print("Invalid directory. Exiting.")
     exit(1)
-elif type(args.images) is not list:
-    args.images = [args.images]
+
+subdirs = [dir for dir in listdir(directory) if path.isdir(path.join(directory, dir))]
+if args.verbose:
+    print("Detected %i subdirectories, one per individual" % len(subdirs))
 
 if args.time:
     import mna.tp01.utils.timer
