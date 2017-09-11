@@ -22,4 +22,3 @@ class GrandSchmidt:
                 q[j][i] = e[j]
         return q, r
 
-
