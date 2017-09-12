@@ -5,15 +5,14 @@ import scipy.linalg as sc
 import unittest
 from random import randint
 
-# _random_seed = randint(1,100000)
-_random_seed = 19472
-print("Testing with Hessemberg seed {0}".format(_random_seed))
+_random_seed = randint(1,100000)
+print("Testing with Hessenberg seed {0}".format(_random_seed))
 
 
-class GrandSchmidtTest4by4(unittest.TestCase):
+class HessenbergTest4by4(unittest.TestCase):
 
     def test(self):
-        matrix = np.matrix("2 0 2 3; 1 4 2 3; 2 5 6 3; 4 5 4 8")
+        matrix = np.matrix("2. 0 2 3; 1 4 2 3; 2 5 6 3; 4 5 4 8")
         oH = sc.hessenberg(matrix)
         H = QRAlgorithm.HessenbergReduction(matrix)
         assertEqualMatrix(H,oH)
@@ -22,7 +21,7 @@ class GrandSchmidtTest4by4(unittest.TestCase):
         assertEqualMatrix(np.sort(oVe),np.sort(Ve))
         assertEqualMatrix(np.sort(np.linalg.eigvals(matrix)),np.sort(np.linalg.eigvals(H)))
 
-class GrandSchmidtTestSymetric(unittest.TestCase):
+class HessenbergTestSymetric(unittest.TestCase):
 
     def test(self):
         random = np.random
@@ -39,7 +38,7 @@ class GrandSchmidtTestSymetric(unittest.TestCase):
         assertEqualMatrix(np.sort(np.linalg.eigvals(matrix)),np.sort(np.linalg.eigvals(H)))
         assertEqualMatrix(H,H.T)
 
-class GrandSchmidtTestNbyN(unittest.TestCase):
+class HessenbergTestNbyN(unittest.TestCase):
 
     def test(self):
         random = np.random

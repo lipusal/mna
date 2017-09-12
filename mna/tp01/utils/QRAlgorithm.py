@@ -38,7 +38,7 @@ class QRAlgorithm:
         H=deepcopy(matrix)
         n = H[0].size
         for k in range(n-2):
-            x = col(H[k + 1:n, k])
+            x = deepcopy(col(H[k + 1:n, k]))
             e1 = col(np.zeros(n-(k+1)))
             e1[0] = 1
             sgn = np.sign(x[0])
@@ -46,19 +46,9 @@ class QRAlgorithm:
             v = (x + e1*sgn*np.linalg.norm(x))
             v = v/np.linalg.norm(v)
 
-            H[k + 1:n, k:n] = H[k + 1:n, k:n] - 2 * v * (v.T.dot(H[k + 1:n, k:n]))
-            H[:, k + 1:n] = H[:, k + 1:n] - 2 * (H[:, k + 1:n].dot(v)).dot(v.T)
-            H[k + 2:n, [k]] = col(np.zeros((n - (k + 2))))
+            H[k+1:n, k:n] = H[k+1:n, k:n] - 2 * v * (v.T.dot(H[k+1:n, k:n]))
+            H[:, k+1:n] = H[:, k+1:n] - 2 * (H[:, k+1:n].dot(v)).dot(v.T)
+            H[k+2:n, k] = col(np.zeros((n - (k + 2))))
 
 
         return H
-
-
-# VA, VE = QRAlgorithm.QR(np.matrix("2 0; 1 4"))
-#
-# print(VA)
-# print("----")
-# print(VE)
-
-A=np.matrix("2 0 2 3; 1 4 2 3; 2 5 6 3; 4 5 4 8")
-H = QRAlgorithm.HessenbergReduction(A)
