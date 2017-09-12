@@ -1,24 +1,68 @@
 from mna.tp01.utils.GrandSchmidt import *
+from copy import copy, deepcopy
+
 class QRAlgorithm:
 
     @staticmethod
     def QR (matrix, method=GrandSchmidt.QR):
+        n = matrix[0].size
         Q,R = method(matrix)
-        eig_val = np.dot(np.transpose(Q),np.dot(Q,matrix))
+        eig_val = Q.T.dot(matrix.dot(Q))
         eig_vec = Q
         lastValue = matrix[0,0]
-        while abs(eig_val[0,0]-lastValue) > 0.0001:
+        I = np.identity(n)
+        # while abs(eig_val[0,0]-lastValue) > 0.01:
+        for i in range(50):
             lastValue = eig_val[0,0]
-            Q,R = method(matrix)
-            eig_val = np.dot(np.transpose(Q),np.dot(Q,eig_val))
-            eig_vec = np.dot(eig_vec,Q)
+            print(lastValue)
+            mu = QRAlgorithm.WilkinsonShift(eig_val[n-2,n-2], eig_val[n-1,n-1], eig_val[n-2,n-1])
+            # This line should use faster Hessenberg reduction:
+            Q,R = method(eig_val-mu*I)
+            # This line needs speeding up, currently O(n^3) operations!:
+            eig_val = R*Q + mu*I
+            # Q,R = method(matrix)
+            # eig_val = Q.T.dot(eig_val.dot(Q))
+            eig_vec = eig_vec.dot(Q)
 
-        return eig_val, eig_vec
+        return np.diagonal(eig_val), eig_vec
+
+    @staticmethod
+    def WilkinsonShift( a, b, c ):
+        # Calculate Wilkinson's shift for symmetric matrices:
+        delta = (a-c)/2
+        return c - np.sign(delta)*b**2/(abs(delta) + np.sqrt(delta**2+b**2))
+
+    @staticmethod
+    def HessenbergReduction( matrix ):
+    # Reduce A to a Hessenberg matrix H so that A and H are similar:
+        n = matrix[0].size
+        H = matrix
+        for k in range(n-2):
+            x = col(matrix[k+1:n, k])
+            e1 = col(np.zeros(n-(k+1)))
+            e1[0] = 1
+            sgn = np.sign(x[0])
+
+            v = (x + e1*sgn*np.linalg.norm(x))
+            v = v/np.linalg.norm(v)
+
+            # Q1 = np.identity(n-1) - (v.dot(v.T))*2
+            Q1 = v.T.dot(matrix[k+1:n,k:n])
+            matrix[k+1:n, k:n] = matrix[k+1:n,k:n] - 2*v*(v.T.dot(matrix[k+1:n,k:n]))
+            matrix[:,k+1:n] = matrix[:,k+1:n] - 2*(matrix[:,k+1:n].dot(v)).dot(v.T)
+            matrix[k+2:n,k] = col(np.zeros((n-(k+2))))
 
 
+        return matrix
 
-VA, VE = QRAlgorithm.QR(np.matrix("1 0; 1 4"))
 
-print(VA)
-print("----")
-print(VE)
+# VA, VE = QRAlgorithm.QR(np.matrix("2 0; 1 4"))
+#
+# print(VA)
+# print("----")
+# print(VE)
+
+A=np.matrix("2 0 2 3; 1 4 2 3; 2 5 6 3; 4 5 4 8")
+H = QRAlgorithm.HessenbergReduction(A)
+print(np.linalg.eigvals(H))
+print(np.linalg.eigvals(A))
