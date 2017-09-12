@@ -1,4 +1,4 @@
-from mna.tp01.utils.matrices import GrandSchmidt
+from mna.tp01.utils.GrandSchmidt import GrandSchmidt
 from mna.tp01.tests.Runner import *
 import numpy as np
 import unittest
@@ -6,6 +6,17 @@ from random import randint
 
 _random_seed = randint(1,100000)
 print("Testing with GrandSchmidt seed {0}".format(_random_seed))
+
+
+class GrandSchmidtTest2by2(unittest.TestCase):
+
+    def test(self):
+        matrix = np.matrix("1 0; 1 4")
+        oQ,oR = np.linalg.qr(matrix)
+        Q,R = GrandSchmidt.QR(matrix)
+        assertAbsEqualMatrix(Q,oQ)
+        assertAbsEqualMatrix(R,oR)
+        assertEqualMatrix(matrix,Q.dot(R))
 
 class GrandSchmidtTest3by3(unittest.TestCase):
 
@@ -30,4 +41,4 @@ class GrandSchmidtTesNbyN(unittest.TestCase):
         Q,R = GrandSchmidt.QR(matrix)
         assertAbsEqualMatrix(Q,oQ)
         assertAbsEqualMatrix(R,oR)
-        assertEqualMatrix(matrix,np.dot(Q,R))
+        assertEqualMatrix(matrix,Q.dot(R))

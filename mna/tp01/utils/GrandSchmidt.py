@@ -1,4 +1,5 @@
 import numpy as np
+from mna.tp01.utils.Utils import *
 
 class GrandSchmidt:
 
@@ -8,17 +9,17 @@ class GrandSchmidt:
         q = np.zeros((n, n))
         r = np.zeros((n, n))
         for i in range(n):
-            u = matrix[:, i]
+            u = col(matrix[:, i])
             aux = u
             for j in range(i):
-                aux = np.subtract(aux,(np.dot(u, q[:,j])*q[:,j]))
+                aux = aux - ( col(q[:,j]) * inner(u,(q[:,j])) )
             u = aux
             e = u / np.linalg.norm(u)
 
             for j in range(i, n):
-                r[i][j] = np.dot(matrix[:,j], e)
+                r[i,j] = inner(matrix[:,j],e)
 
             for j in range(n):
-                q[j][i] = e[j]
+                q[j,i] = e[j]
         return q, r
 
