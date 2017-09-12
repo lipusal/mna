@@ -5,7 +5,7 @@ import scipy.linalg as sc
 import unittest
 from random import randint
 
-_random_seed = randint(1,100000)
+_random_seed = randint(1,100000) #Set desired seed here
 print("Testing with Hessenberg seed {0}".format(_random_seed))
 
 
@@ -26,7 +26,7 @@ class HessenbergTestSymetric(unittest.TestCase):
     def test(self):
         random = np.random
         random.seed(_random_seed)
-        size = random.randint(100)
+        size = random.randint(10,100)
         matrix = random.rand(size,size)
         matrix = matrix.dot(matrix.T)
         oH = sc.hessenberg(matrix)
@@ -43,7 +43,7 @@ class HessenbergTestNbyN(unittest.TestCase):
     def test(self):
         random = np.random
         random.seed(_random_seed)
-        size = random.randint(100)
+        size = random.randint(10,100)
         matrix = random.rand(size,size)
         oH = sc.hessenberg(matrix)
         H = QRAlgorithm.HessenbergReduction(matrix)

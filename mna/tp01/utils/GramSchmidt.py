@@ -1,7 +1,7 @@
 import numpy as np
 from mna.tp01.utils.Utils import *
 
-class GrandSchmidt:
+class GramSchmidt:
 
     @staticmethod
     def QR (matrix):

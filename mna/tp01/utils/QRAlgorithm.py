@@ -1,10 +1,10 @@
-from mna.tp01.utils.GrandSchmidt import *
+from mna.tp01.utils.GramSchmidt import *
 from copy import copy, deepcopy
 
 class QRAlgorithm:
 
     @staticmethod
-    def QR (matrix, method=GrandSchmidt.QR):
+    def QR (matrix, method=GramSchmidt.QR):
         n = matrix[0].size
         Q,R = method(matrix)
         eig_val = Q.T.dot(matrix.dot(Q))
@@ -35,7 +35,7 @@ class QRAlgorithm:
     @staticmethod
     def HessenbergReduction(matrix):
     # Reduce A to a Hessenberg matrix H so that A and H are similar:
-        H=deepcopy(matrix)
+        H=np.array(matrix)
         n = H[0].size
         for k in range(n-2):
             x = deepcopy(col(H[k + 1:n, k]))
@@ -48,7 +48,7 @@ class QRAlgorithm:
 
             H[k+1:n, k:n] = H[k+1:n, k:n] - 2 * v * (v.T.dot(H[k+1:n, k:n]))
             H[:, k+1:n] = H[:, k+1:n] - 2 * (H[:, k+1:n].dot(v)).dot(v.T)
-            H[k+2:n, k] = col(np.zeros((n - (k + 2))))
+            H[k+2:n, k] = np.zeros((n - (k + 2)))
 
 
         return H
