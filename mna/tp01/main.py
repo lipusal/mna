@@ -68,18 +68,8 @@ eigenvectors = eigenvectors[0:used_eigenvectors]
 if args.verbose:
     print("Projecting images to eigenvectors...")
 
-projected_train_imgs = []
-# TODO: Optimize, we spend the most time here
-for i in range(len(train_images)):
-    projected_train_imgs.append([])
-    for j in range(len(eigenvectors)):
-        projected_train_imgs[i].append(np.dot(train_images[i], eigenvectors[j]))
-
-projected_test_imgs = []
-for i in range(len(test_images)):
-    projected_test_imgs.append([])
-    for j in range(len(eigenvectors)):
-        projected_test_imgs[i].append(np.dot(test_images[i], eigenvectors[j]))
+projected_train_imgs = np.dot(train_images, np.transpose(eigenvectors))
+projected_test_imgs = np.dot(test_images, np.transpose(eigenvectors))
 
 # Show mean face
 # fig, axes = plt.subplots(1,1)
