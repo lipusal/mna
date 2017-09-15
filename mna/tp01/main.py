@@ -1,14 +1,15 @@
-from os import path, listdir
 import argparse
-from PIL import Image
 import numpy as np
-import matplotlib.pyplot as plt
+from mna.tp01.utils.images import open_images, normalize_images
+# import matplotlib.pyplot as plt
 from sklearn import svm
 
 parser = argparse.ArgumentParser(description="Face recognizer. Receives an image and identifies it in a database.")
 parser.add_argument("directory", help="Directory from which to load images. Directory should have further "
                                       "subdirectories, where each subdirectory belongs to a different individual. Each "
                                       "individual should have the same amount of pictures.", type=str)
+parser.add_argument("num_train", help="Number of pictures per individual to take as training pictures.", type=int)
+parser.add_argument("num_test", help="Number of pictures per individual to take as testing pictures.", type=int)
 parser.add_argument("--verbose", "-v", help="Print verbose information while running", action="store_true",
                     default=False)
 parser.add_argument("--cutoff", "-c", help="Percentage of captured variance at which to cut off using eigenvectors. "
@@ -16,49 +17,37 @@ parser.add_argument("--cutoff", "-c", help="Percentage of captured variance at w
 parser.add_argument("--time", "-t", help="Print elapsed program time", action="store_true", default=False)
 args = parser.parse_args()
 
-# Normalize and validate directory
-directory = path.normpath(args.directory)
-if not path.exists(directory) or not path.isdir(directory):
-    print("Invalid directory. Exiting.")
-    exit(1)
-
-subdirs = [dir for dir in listdir(directory) if path.isdir(path.join(directory, dir))]
-if args.verbose:
-    print("Detected %i subdirectories, one per individual" % len(subdirs))
-
 if args.time:
     import mna.tp01.utils.timer
 
-images = []
-for raw_path in args.images:
-    # For each image, save an array of (R,G,B) tuples, one per pixel
-    images.append(list(
-        Image.open(path.normpath(raw_path))
-            .convert('L')
-            .getdata()))
+# Open images and separate them in training and testing groups
+if args.verbose:
+    print("Loading pictures...")
 
-# TODO: Verify all images have the same size
+num_individuals, train_images, test_images = open_images(args)
 
-# Normalize data
-mean_pixels = np.mean(images, 0)     # Average value for each pixel
-# TODO: Dividir por varianza?
+# Normalize training images
+if args.verbose:
+    print("Normalizing pictures...")
 
-for i in range(len(images)):
-    for j in range(len(images[i])):
-        images[i][j] -= mean_pixels[j]
+normalize_images(train_images)
+
 
 # Calculate covariance matrix
 # cov = np.cov(images, rowvar=True)
 # eigenvalues, eigenvectors = np.linalg.eig(cov)
 
-_, singular_values, eigenvectors = np.linalg.svd(images, full_matrices=False)
+if args.verbose:
+    print("Finding eigenvectors...")
 
+# TODO: Use our functions for this
+_, singular_values, eigenvectors = np.linalg.svd(train_images, full_matrices=False)
 eigenvalues = singular_values ** 2
 
+# Get enough eigenvalues to capture at least the specified variance
 cummulative_sum = 0
 eigenvalues_sum = sum(eigenvalues)
 
-# Get enough eigenvalues to capture at least the specified variance
 used_eigenvectors = 0
 for i in range(len(eigenvectors)):
     used_eigenvectors += 1
@@ -76,12 +65,21 @@ if args.verbose:
 eigenvectors = eigenvectors[0:used_eigenvectors]
 
 # Project each image to all chosen eigenvectors
-projections = []
-for i in range(len(images)):
-    projections.append([])
-    for j in range(len(eigenvectors)):
-        projections[i].append(np.dot(images[i], eigenvectors[j]))
+if args.verbose:
+    print("Projecting images to eigenvectors...")
 
+projected_train_imgs = []
+# TODO: Optimize, we spend the most time here
+for i in range(len(train_images)):
+    projected_train_imgs.append([])
+    for j in range(len(eigenvectors)):
+        projected_train_imgs[i].append(np.dot(train_images[i], eigenvectors[j]))
+
+projected_test_imgs = []
+for i in range(len(test_images)):
+    projected_test_imgs.append([])
+    for j in range(len(eigenvectors)):
+        projected_test_imgs[i].append(np.dot(test_images[i], eigenvectors[j]))
 
 # Show mean face
 # fig, axes = plt.subplots(1,1)
@@ -99,10 +97,16 @@ for i in range(len(images)):
 
 clf = svm.LinearSVC()
 
-train_images = projections[0:5] + projections[10:15]
-test_images = projections[5:10] + projections[15:20]
-classes = [0]*5 + [1]*5
+# Get which pictures belong to which individual
+train_classes = list()
+test_classes = list()
+for i in range(num_individuals):
+    train_classes += [i] * args.num_train
+    test_classes += [i] * args.num_test
 
-clf.fit(train_images, classes)
-classifications = clf.score(test_images, classes)
+if args.verbose:
+    print("Training and testing picture categories...")
+
+clf.fit(projected_train_imgs, train_classes)
+classifications = clf.score(projected_test_imgs, test_classes)
 print('Precisión con {0} autocaras: {1}%'.format(len(eigenvectors), classifications*100))
