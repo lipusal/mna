@@ -11,6 +11,7 @@ parser.add_argument("--verbose", "-v", help="Print verbose information while run
                     default=False)
 parser.add_argument("--cutoff", "-c", help="Percentage of captured variance at which to cut off using eigenvectors. "
                                            "Decimal in (0, 1]. Default is 0.9", type=int, default=0.9)
+parser.add_argument("--time", "-t", help="Print elapsed program time", action="store_true", default=False)
 args = parser.parse_args()
 
 if args.images is None:
@@ -18,6 +19,9 @@ if args.images is None:
     exit(1)
 elif type(args.images) is not list:
     args.images = [args.images]
+
+if args.time:
+    import mna.tp01.utils.timer
 
 images = []
 for raw_path in args.images:
