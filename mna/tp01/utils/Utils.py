@@ -8,3 +8,6 @@ def col(V):
 
 def row(V):
     return V.reshape((1,V.size))
+
+def mnaMat(data):
+    return np.array(np.matrix(data))

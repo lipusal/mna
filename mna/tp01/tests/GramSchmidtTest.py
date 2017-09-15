@@ -1,4 +1,5 @@
 from mna.tp01.utils.GramSchmidt import GramSchmidt
+from mna.tp01.utils.Utils import *
 from mna.tp01.tests.Runner import *
 import numpy as np
 import unittest
@@ -11,7 +12,7 @@ print("Testing with GramSchmidt seed {0}".format(_random_seed))
 class GramSchmidtTest2by2(unittest.TestCase):
 
     def test(self):
-        matrix = np.array(np.matrix("1 0; 1 4"))
+        matrix = mnaMat("1 0; 1 4")
         oQ,oR = np.linalg.qr(matrix)
         Q,R = GramSchmidt.QR(matrix)
         assertAbsEqualMatrix(Q,oQ)

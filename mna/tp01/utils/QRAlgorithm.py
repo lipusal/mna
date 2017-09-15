@@ -4,27 +4,42 @@ from copy import copy, deepcopy
 class QRAlgorithm:
 
     @staticmethod
-    def QR (matrix, method=GramSchmidt.QR):
-        n = matrix[0].size
+    def trivialEig (matrix, method=GramSchmidt.QR):
+        n = matrix[0].size-1
         Q,R = method(matrix)
-        eig_val = Q.T.dot(matrix.dot(Q))
+        H = matrix
+        eig_val = Q.T.dot(H.dot(Q))
         eig_vec = Q
-        lastValue = matrix[0,0]
-        I = np.identity(n)
-        # while abs(eig_val[0,0]-lastValue) > 0.01:
-        for i in range(50):
-            lastValue = eig_val[0,0]
-            print(lastValue)
-            mu = QRAlgorithm.WilkinsonShift(eig_val[n-2,n-2], eig_val[n-1,n-1], eig_val[n-2,n-1])
-            # This line should use faster Hessenberg reduction:
-            Q,R = method(eig_val-mu*I)
-            # This line needs speeding up, currently O(n^3) operations!:
-            eig_val = R*Q + mu*I
-            # Q,R = method(matrix)
-            # eig_val = Q.T.dot(eig_val.dot(Q))
+        lastValue = eig_val[1,1]+1
+        for i in range(500):
+        # while abs(eig_val[1,1]-lastValue) > 0:
+            lastValue = eig_val[1,1]
+            Q,R = method(eig_val)
+            eig_val = R.dot(Q)
             eig_vec = eig_vec.dot(Q)
 
         return np.diagonal(eig_val), eig_vec
+
+    @staticmethod
+    def wilkinsonEig (matrix, method=GramSchmidt.QR):
+        n = matrix[0].size
+        Q,R = method(matrix)
+        # To only found eigenValues
+        # H = QRAlgorithm.HessenbergReduction(matrix)
+        H = matrix
+        eig_val = Q.T.dot(H.dot(Q))
+        eig_vec = Q
+        lastValue = eig_val[0,0]
+        I = np.identity(n)
+        while abs(eig_val[0,1]) > 0.0000000001:
+            lastValue = eig_val[0,0]
+            mu = QRAlgorithm.WilkinsonShift(eig_val[n-2,n-2], eig_val[n-1,n-1], eig_val[n-2,n-1])
+            Q,R = method(eig_val-mu*I)
+            eig_val = R.dot(Q) + I*mu
+            eig_vec = eig_vec.dot(Q)
+
+        return np.diagonal(eig_val), eig_vec
+
 
     @staticmethod
     def WilkinsonShift( a, b, c ):

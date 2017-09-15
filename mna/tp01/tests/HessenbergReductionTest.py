@@ -1,5 +1,6 @@
 from mna.tp01.utils.QRAlgorithm import *
 from mna.tp01.tests.Runner import *
+from mna.tp01.utils.Utils import *
 import numpy as np
 import scipy.linalg as sc
 import unittest
@@ -12,14 +13,13 @@ print("Testing with Hessenberg seed {0}".format(_random_seed))
 class HessenbergTest4by4(unittest.TestCase):
 
     def test(self):
-        matrix = np.matrix("2. 0 2 3; 1 4 2 3; 2 5 6 3; 4 5 4 8")
+        matrix = mnaMat("2. 0 2 3; 1 4 2 3; 2 5 6 3; 4 5 4 8")
         oH = sc.hessenberg(matrix)
         H = QRAlgorithm.HessenbergReduction(matrix)
         assertEqualMatrix(H,oH)
-        oVe,_ = np.linalg.eig(matrix)
-        Ve,_ = np.linalg.eig(H)
-        assertEqualMatrix(np.sort(oVe),np.sort(Ve))
-        assertEqualMatrix(np.sort(np.linalg.eigvals(matrix)),np.sort(np.linalg.eigvals(H)))
+        oVa,_ = np.linalg.eig(matrix)
+        Va,_ = np.linalg.eig(H)
+        assertAbsEqualMatrix(np.sort(oVa),np.sort(Va))
 
 class HessenbergTestSymetric(unittest.TestCase):
 
@@ -32,10 +32,9 @@ class HessenbergTestSymetric(unittest.TestCase):
         oH = sc.hessenberg(matrix)
         H = QRAlgorithm.HessenbergReduction(matrix)
         assertEqualMatrix(H,oH)
-        oVe,_ = np.linalg.eig(matrix)
-        Ve,_ = np.linalg.eig(H)
-        assertEqualMatrix(np.sort(oVe),np.sort(Ve))
-        assertEqualMatrix(np.sort(np.linalg.eigvals(matrix)),np.sort(np.linalg.eigvals(H)))
+        oVa,_ = np.linalg.eig(matrix)
+        Va,_ = np.linalg.eig(H)
+        assertAbsEqualMatrix(np.sort(oVa),np.sort(Va))
         assertEqualMatrix(H,H.T)
 
 class HessenbergTestNbyN(unittest.TestCase):
@@ -48,7 +47,6 @@ class HessenbergTestNbyN(unittest.TestCase):
         oH = sc.hessenberg(matrix)
         H = QRAlgorithm.HessenbergReduction(matrix)
         assertEqualMatrix(H,oH)
-        oVe,_ = np.linalg.eig(matrix)
-        Ve,_ = np.linalg.eig(H)
-        assertEqualMatrix(np.sort(oVe),np.sort(Ve))
-        assertEqualMatrix(np.sort(np.linalg.eigvals(matrix)),np.sort(np.linalg.eigvals(H)))
+        oVa,_ = np.linalg.eig(matrix)
+        Va,_ = np.linalg.eig(H)
+        assertAbsEqualMatrix(np.sort(oVa),np.sort(Va))
