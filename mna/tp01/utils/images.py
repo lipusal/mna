@@ -57,7 +57,7 @@ def normalize_path(raw_path, base_dir=""):
     verify it exists. Raise exception if invalid."""
     normalized_path = path.normpath(path.join(base_dir, raw_path))
     if not path.exists(normalized_path):
-        raise Exception("%s does not exist" % path)
+        raise Exception("%s does not exist" % raw_path)
 
     return normalized_path
 
