@@ -1,8 +1,12 @@
 from mna.tp01.utils.GramSchmidt import *
+import sys
 from copy import copy, deepcopy
 
 class QRAlgorithm:
 
+    # This is the most basic algorithm
+    # checks when the subdiagonal converges to 0
+    # Calculate the eigenVectors multiplying every iteration
     @staticmethod
     def trivialEig (matrix, method=GramSchmidt.QR):
         n = matrix[0].size-1
@@ -10,10 +14,29 @@ class QRAlgorithm:
         H = matrix
         eig_val = Q.T.dot(H.dot(Q))
         eig_vec = Q
-        lastValue = eig_val[1,1]+1
         for i in range(500):
-        # while abs(eig_val[1,1]-lastValue) > 0:
-            lastValue = eig_val[1,1]
+        # while sum(abs(np.diag(eig_val[1:n,:]))>0.0001):
+            Q,R = method(eig_val)
+            eig_val = R.dot(Q)
+            eig_vec = eig_vec.dot(Q)
+
+        return np.diagonal(eig_val), eig_vec
+
+    # This is the most basic algorithm
+    # checks when the subdiagonal converges to 0
+    # Calculate the eigenVectors multiplying every iteration
+    @staticmethod
+    def betterCheckEig (matrix, method=GramSchmidt.QR):
+        n = matrix[0].size-1
+        Q,R = method(matrix)
+        H = matrix
+        eig_val = Q.T.dot(H.dot(Q))
+        eig_vec = Q
+        known = 0
+        while known<n:
+            while n-1-known >= 0 and eig_val[n-known, n-1-known] < sys.float_info.epsilon :
+                known += 1
+
             Q,R = method(eig_val)
             eig_val = R.dot(Q)
             eig_vec = eig_vec.dot(Q)
@@ -24,15 +47,11 @@ class QRAlgorithm:
     def wilkinsonEig (matrix, method=GramSchmidt.QR):
         n = matrix[0].size
         Q,R = method(matrix)
-        # To only found eigenValues
-        # H = QRAlgorithm.HessenbergReduction(matrix)
         H = matrix
         eig_val = Q.T.dot(H.dot(Q))
         eig_vec = Q
-        lastValue = eig_val[0,0]
         I = np.identity(n)
-        while abs(eig_val[0,1]) > 0.0000000001:
-            lastValue = eig_val[0,0]
+        while sum(abs(np.diag(eig_val[1:n,:]))>0.000001):
             mu = QRAlgorithm.WilkinsonShift(eig_val[n-2,n-2], eig_val[n-1,n-1], eig_val[n-2,n-1])
             Q,R = method(eig_val-mu*I)
             eig_val = R.dot(Q) + I*mu
