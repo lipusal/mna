@@ -9,6 +9,7 @@ def signZero(n):
     else:
         return np.sign(n)
 
+
 def houseHolder(A):
     R = deepcopy(np.asmatrix(A).astype(float))
     m = len(A)
@@ -29,7 +30,7 @@ def houseHolder(A):
 
     return Q, R
 
-@staticmethod
+
 def HouseholderReflector(vector):
     e1 = np.zeros(np.size(vector))
     u = vector - np.dot(np.linalg.norm(vector), e1)
