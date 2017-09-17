@@ -16,7 +16,7 @@ class HouseHolderTest4by4(unittest.TestCase):
     def test(self):
         matrix = mnaMat("2 0 2 3; 1 4 2 3; 2 5 6 3; 4 5 4 8")
         pyQ, pyR = np.linalg.qr(matrix)
-        q, r = houseHolder(matrix)
+        q, r = HouseHolder.qr(matrix)
         assertAbsEqualMatrix(q, pyQ)
         assertAbsEqualMatrix(r, pyR)
 
@@ -29,7 +29,7 @@ class HouseHolderTestSymetric(unittest.TestCase):
         matrix = random.rand(size, size) * 10000
         matrix = matrix.dot(matrix.T)
         (pyQ, pyR) = np.linalg.qr(matrix)
-        (q, r) = houseHolder(matrix)
+        (q, r) = HouseHolder.qr(matrix)
         assertAbsEqualMatrix(q, pyQ)
         assertAbsEqualMatrix(r, pyR, 4)
 
@@ -42,7 +42,7 @@ class HouseHolderTestNbyN(unittest.TestCase):
         size = random.randint(100)
         matrix = random.rand(size, size)
         (pyQ, pyR) = np.linalg.qr(matrix)
-        (q, r) = houseHolder(matrix)
+        (q, r) = HouseHolder.qr(matrix)
         assertAbsEqualMatrix(q, pyQ)
         assertAbsEqualMatrix(r, pyR)
 

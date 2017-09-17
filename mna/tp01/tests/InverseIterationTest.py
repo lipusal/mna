@@ -49,14 +49,14 @@ class InverseIterationTesNbyN(unittest.TestCase):
             for j in range(len(aux)):
                 eigenvectors[j][i] = aux[j][0]
 
-        #seeds 31921
+        #seeds 31921  67766
         # print("\nExpected EigenVectors:")
         # print (oeigenvectors)
         # print("\nActual EigenVectors:")
         # print (eigenvectors)
         # print("\nerrorMatrix:")
         #print(np.subtract(np.absolute(oeigenvectors),np.absolute(eigenvectors)))
-        assertAlmostEqualMatrix(eigenvectors,oeigenvectors)
+        assertAbsEqualMatrix(eigenvectors,oeigenvectors)
 
 
 
