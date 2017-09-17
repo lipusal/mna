@@ -16,19 +16,22 @@ def open_images(args):
 
     result = list()
 
-    num_train_per_person = args.num_train
-    num_test_per_person = args.num_test
+    pics_per_individual = args.num_train + args.num_test
+
     # Take very first picture size as default size
     first_dir = normalize_dir(subdirs[0], base_dir)
     first_pic = normalize_path(listdir(first_dir)[0], first_dir)
     picture_size = len(to_grayscale(first_pic))
 
     for individual in subdirs:
-        pics = [normalize_path(pic, individual) for pic in listdir(individual)]
+        # Expected picture names: 1.pgm, 2.pgm, ..., n.pgm
+        pics = [normalize_path("%i.pgm" % index, individual) for index in range(1, pics_per_individual + 1)]
+        # Keep only existing pictures
+        pics = [pic for pic in pics if path.exists(pic)]
 
-        if len(pics) != num_train_per_person + num_test_per_person:
-            raise Exception("Expecting %i pictures per individual but found %i in %s" %
-                            (num_train_per_person + num_test_per_person, len(pics), individual))
+        if len(pics) != pics_per_individual:
+            raise Exception("Expecting %i pictures per individual, of the form 1.pgm, 2.pgm, ..., %i.pgm. but found "
+                            "%i in %s" % (pics_per_individual, pics_per_individual, len(pics), individual))
 
         result += process_pics(pics, picture_size)
 
@@ -42,6 +45,7 @@ def mean_image(images):
 def normalize_images(images):
     """Subtract mean (per pixel) to all images. Ensure all elements are converted to float."""
     mean_pixels = mean_image(images)
+    # TODO: return np.asarray(images) - mean_pixels
     for i in range(len(images)):
         for j in range(len(images[i])):
             images[i][j] -= mean_pixels[j]
