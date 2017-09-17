@@ -1,56 +1,52 @@
-from mna.tp01.utils.QRAlgorithm import *
+from mna.tp01.utils.HouseHolder import *
 from mna.tp01.tests.Runner import *
 from mna.tp01.utils.Utils import *
 from mna.tp01.utils.HouseHolder import *
 import numpy as np
-import scipy.linalg as sc
 import unittest
 from random import randint
 
-_random_seed = randint(1,100000) #Set desired seed here
-print("Testing with Householder seed {0}".format(_random_seed))
+_random_seed = randint(1,100000)
+# _random_seed = 26221
+# _random_seed = 26549
+print("Testing with House Holder seed {0}.".format(_random_seed))
 
 
-class HouseholderTest4by4(unittest.TestCase):
+class HouseHolderTest4by4(unittest.TestCase):
 
     def test(self):
-        matrix = mnaMat("2. 0 2 3; 1 4 2 3; 2 5 6 3; 4 5 4 8")
-        oH = sc.hessenberg(matrix)
-        H = QRAlgorithm.HessenbergReduction(matrix)
-        assertEqualMatrix(H,oH)
-        oVa,_ = np.linalg.eig(matrix)
-        Va,_ = np.linalg.eig(H)
-        assertAbsEqualMatrix(np.sort(oVa),np.sort(Va))
+        matrix = mnaMat("2 0 2 3; 1 4 2 3; 2 5 6 3; 4 5 4 8")
+        pyQ, pyR = np.linalg.qr(matrix)
+        q, r = HouseHolder.qr(matrix)
+        assertAbsEqualMatrix(q, pyQ)
+        assertAbsEqualMatrix(r, pyR)
 
-class HessenbergTestSymetric(unittest.TestCase):
 
+class HouseHolderTestSymetric(unittest.TestCase):
     def test(self):
         random = np.random
         random.seed(_random_seed)
-        size = random.randint(10,100)
-        matrix = random.rand(size,size)
+        size = random.randint(100)
+        matrix = random.rand(size, size) * 10000
         matrix = matrix.dot(matrix.T)
-        oH = sc.hessenberg(matrix)
-        H = QRAlgorithm.HessenbergReduction(matrix)
-        assertEqualMatrix(H,oH)
-        oVa,_ = np.linalg.eig(matrix)
-        Va,_ = np.linalg.eig(H)
-        assertAbsEqualMatrix(np.sort(oVa),np.sort(Va))
-        assertEqualMatrix(H,H.T)
+        (pyQ, pyR) = np.linalg.qr(matrix)
+        (q, r) = HouseHolder.qr(matrix)
+        assertAbsEqualMatrix(q, pyQ)
+        assertAbsEqualMatrix(r, pyR, 4)
 
-class HessenbergTestNbyN(unittest.TestCase):
+
+class HouseHolderTestNbyN(unittest.TestCase):
 
     def test(self):
         random = np.random
         random.seed(_random_seed)
-        size = random.randint(10,100)
-        matrix = random.rand(size,size)
-        oH = sc.hessenberg(matrix)
-        H = QRAlgorithm.HessenbergReduction(matrix)
-        assertEqualMatrix(H,oH)
-        oVa,_ = np.linalg.eig(matrix)
-        Va,_ = np.linalg.eig(H)
-        assertAbsEqualMatrix(np.sort(oVa),np.sort(Va))
+        size = random.randint(100)
+        matrix = random.rand(size, size)
+        (pyQ, pyR) = np.linalg.qr(matrix)
+        (q, r) = HouseHolder.qr(matrix)
+        assertAbsEqualMatrix(q, pyQ)
+        assertAbsEqualMatrix(r, pyR)
+
 
 class HouseholderReflectorTest(unittest.TestCase):
 
