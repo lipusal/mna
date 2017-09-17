@@ -86,3 +86,9 @@ class QRAlgorithm:
 
 
         return H
+
+
+
+    @staticmethod
+    def FrancisAlgorithm(vector):
+        pass

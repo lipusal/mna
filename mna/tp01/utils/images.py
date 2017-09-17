@@ -6,7 +6,8 @@ import numpy as np
 def open_images(args):
     """Take arguments received from command line and process pictures. Traverse subdirectories from the given base
     directory and convert found images, ensuring each individual has the same number of pictures and that all pictures
-    have the same size. Return a tuple of the form (num_individuals, [processed_pics])."""
+    have the same size. Return a tuple of the form ([], []), where the first list is composed of the training images and
+    the second list is composed of the test images."""
     base_dir = normalize_dir(args.directory)
     # Get all normalized subdirectories, relative to the base directory
     subdirs = [normalize_dir(dir, base_dir) for dir in listdir(base_dir) if path.isdir(path.join(base_dir, dir))]
@@ -14,7 +15,7 @@ def open_images(args):
     if args.verbose:
         print("Detected %i subdirectories, assuming one per individual" % num_subdirs)
 
-    result = list()
+    result = [[], []]
 
     pics_per_individual = args.num_train + args.num_test
 
@@ -33,24 +34,15 @@ def open_images(args):
             raise Exception("Expecting %i pictures per individual, of the form 1.pgm, 2.pgm, ..., %i.pgm. but found "
                             "%i in %s" % (pics_per_individual, pics_per_individual, len(pics), individual))
 
-        result += process_pics(pics, picture_size)
+        train_pics, test_pics = process_pics(pics, picture_size, args.num_train, args.num_test)
+        result[0] += train_pics
+        result[1] += test_pics
 
-    return num_subdirs, result
+    return num_subdirs, result[0], result[1]
 
 
 def mean_image(images):
     return np.mean(images, 0)
-
-
-def normalize_images(images):
-    """Subtract mean (per pixel) to all images. Ensure all elements are converted to float."""
-    mean_pixels = mean_image(images)
-    # TODO: return np.asarray(images) - mean_pixels
-    for i in range(len(images)):
-        for j in range(len(images[i])):
-            images[i][j] -= mean_pixels[j]
-
-    return images
 
 
 def normalize_path(raw_path, base_dir=""):
@@ -72,17 +64,28 @@ def normalize_dir(raw_path, base_dir=""):
     return normalized_dir
 
 
-def process_pics(pics, picture_size):
-    """Process the given list of pictures, returning a list where each element is a processed picture."""
-    result = list()
+def process_pics(pics, picture_size, num_train, num_test):
+    """Process the given list of pictures, returning a tuple of the form ([num_train], [num_test]) where each element of
+    the array is a processed picture."""
+    result = ([], [])
     i = 0
-    for pic in pics:
-        converted_pic = to_grayscale(pic)
+    for train_pic in range(num_train):
+        converted_pic = to_grayscale(pics[i])
 
         if len(converted_pic) != picture_size:
-            raise Exception("Expecting all images to be of the same size but %s is of a different size" % pic)
+            raise Exception("Expecting all images to be of the same size but %s is of a different size" % train_pic)
 
-        result.append(converted_pic)
+        result[0].append(converted_pic)
+        i += 1
+    # FIXME: Avoid duplicated code
+    for test_pic in range(num_test):
+        converted_pic = to_grayscale(pics[i])
+
+        if len(converted_pic) != picture_size:
+            raise Exception("Expecting all images to be of the same size but %s is of a different size" % test_pic)
+
+        result[1].append(converted_pic)
+        i += 1
 
     return result
 
@@ -96,6 +99,7 @@ def to_grayscale(picture_path):
              .getdata())
 
 
+# TODO: Delete if unused
 def separate_images(images, num_train, num_test):
     """Separate the given images (assuming they are contiguous by individual) into training images and testing
     images."""

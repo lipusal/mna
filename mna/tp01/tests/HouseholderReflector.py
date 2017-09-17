@@ -1,8 +1,5 @@
-<<<<<<< Updated upstream
 from mna.tp01.utils.QRAlgorithm import *
 from mna.tp01.tests.Runner import *
-=======
->>>>>>> Stashed changes
 from mna.tp01.utils.Utils import *
 import numpy as np
 import scipy.linalg as sc
@@ -16,7 +13,7 @@ print("Testing with Householder seed {0}".format(_random_seed))
 class HouseholderTest4by4(unittest.TestCase):
 
     def test(self):
-        matrix = mnaMat("2. 0 2 3; 1 4 2 3; 2 5 6 3; 4 5 4 8")
+        vector = mnaMat("2. 0 2 3; 1 4 2 3; 2 5 6 3; 4 5 4 8")
         oH = sc.hessenberg(matrix)
         H = QRAlgorithm.HessenbergReduction(matrix)
         assertEqualMatrix(H,oH)
