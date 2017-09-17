@@ -1,4 +1,5 @@
 import numpy as np
+from mna.tp01.utils.Utils import *
 from numpy.linalg import norm
 from copy import copy, deepcopy
 
@@ -33,6 +34,7 @@ def houseHolder(A):
 
 def HouseholderReflector(vector):
     e1 = np.zeros(np.size(vector))
+    e1[0] = 1
     u = vector - np.dot(np.linalg.norm(vector), e1)
     u = u / np.linalg.norm(u)
-    return np.identity(np.size(vector)) - np.dot(2, np.dot(u, np.transpose(u)))
+    return np.identity(np.size(vector)) - np.dot(2, np.dot(col(u),row(u)))

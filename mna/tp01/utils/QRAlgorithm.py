@@ -1,6 +1,7 @@
 from mna.tp01.utils.GramSchmidt import *
 import sys
 from copy import copy, deepcopy
+from mna.tp01.utils.HouseHolder import *
 
 class QRAlgorithm:
 
@@ -84,6 +85,26 @@ class QRAlgorithm:
             H[:, k+1:n] = H[:, k+1:n] - 2 * (H[:, k+1:n].dot(v)).dot(v.T)
             H[k+2:n, k] = np.zeros((n - (k + 2)))
 
+
+        return H
+
+    @staticmethod
+    def HessenbergReductionWithReflector(matrix):
+        # Reduce A to a Hessenberg matrix H so that A and H are similar:
+        H = np.array(matrix)
+        n = H[0].size
+        for k in range(n - 2):
+            x = deepcopy(col(H[k + 1:n, k]))
+            e1 = col(np.zeros(n - (k + 1)))
+            e1[0] = 1
+            sgn = np.sign(x[0])
+
+            v = (x + e1 * sgn * np.linalg.norm(x))
+            v = v / np.linalg.norm(v)
+            v2 = HouseholderReflector(row(x)[0])
+
+            H = H.dot(v2)
+            H[k + 2:n, k] = np.zeros((n - (k + 2)))
 
         return H
 
