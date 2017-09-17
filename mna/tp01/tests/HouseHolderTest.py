@@ -1,8 +1,5 @@
-<<<<<<< Updated upstream
 from mna.tp01.utils.QRAlgorithm import *
 from mna.tp01.tests.Runner import *
-=======
->>>>>>> Stashed changes
 from mna.tp01.utils.Utils import *
 import numpy as np
 import scipy.linalg as sc

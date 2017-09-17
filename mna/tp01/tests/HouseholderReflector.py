@@ -14,39 +14,4 @@ class HouseholderTest4by4(unittest.TestCase):
 
     def test(self):
         vector = mnaMat("2. 0 2 3; 1 4 2 3; 2 5 6 3; 4 5 4 8")
-        oH = sc.hessenberg(matrix)
-        H = QRAlgorithm.HessenbergReduction(matrix)
-        assertEqualMatrix(H,oH)
-        oVa,_ = np.linalg.eig(matrix)
-        Va,_ = np.linalg.eig(H)
-        assertAbsEqualMatrix(np.sort(oVa),np.sort(Va))
 
-class HessenbergTestSymetric(unittest.TestCase):
-
-    def test(self):
-        random = np.random
-        random.seed(_random_seed)
-        size = random.randint(10,100)
-        matrix = random.rand(size,size)
-        matrix = matrix.dot(matrix.T)
-        oH = sc.hessenberg(matrix)
-        H = QRAlgorithm.HessenbergReduction(matrix)
-        assertEqualMatrix(H,oH)
-        oVa,_ = np.linalg.eig(matrix)
-        Va,_ = np.linalg.eig(H)
-        assertAbsEqualMatrix(np.sort(oVa),np.sort(Va))
-        assertEqualMatrix(H,H.T)
-
-class HessenbergTestNbyN(unittest.TestCase):
-
-    def test(self):
-        random = np.random
-        random.seed(_random_seed)
-        size = random.randint(10,100)
-        matrix = random.rand(size,size)
-        oH = sc.hessenberg(matrix)
-        H = QRAlgorithm.HessenbergReduction(matrix)
-        assertEqualMatrix(H,oH)
-        oVa,_ = np.linalg.eig(matrix)
-        Va,_ = np.linalg.eig(H)
-        assertAbsEqualMatrix(np.sort(oVa),np.sort(Va))
