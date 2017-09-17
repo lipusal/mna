@@ -11,3 +11,9 @@ def row(V):
 
 def mnaMat(data):
     return np.array(np.matrix(data))
+
+def sortMatrix(matrix):
+    np.matrix.sort(matrix, axis=0)
+    if np.size(matrix[0])>1:
+        np.matrix.sort(matrix,axis=1)
+    return matrix
