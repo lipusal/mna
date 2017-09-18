@@ -31,7 +31,7 @@ class HouseHolder:
 
         return Q, R
 
-@staticmethod
+
 def HouseholderReflector(vector):
     e1 = np.zeros(np.size(vector))
     e1[0] = 1
