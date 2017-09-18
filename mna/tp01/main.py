@@ -32,8 +32,8 @@ if args.verbose:
 
 # Make numbers easier to play with
 # TODO: Define whether ** 2 stays or not
-train_images = (np.asarray(train_images) / 255) ** 2
-test_images = (np.asarray(test_images) / 255) ** 2
+train_images = (np.asarray(train_images) / 255.0) ** 2
+test_images = (np.asarray(test_images) / 255.0) ** 2
 
 # Subtract mean from train images
 mean_face = mean_image(train_images)
