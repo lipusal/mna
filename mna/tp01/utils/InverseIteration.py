@@ -25,13 +25,3 @@ class InverseIteration:
         #print (eigenvector)
         return eigenvector
 
-
-matrix = np.matrix('1 1 2; 3 4 5; 4 4 5')
-
-#matrix = np.matrix('3650000 2675000 7300000; 2675000 1968500 5350000; 7300000 5350000 14600000')
-eigenvalues,eigenvectors = np.linalg.eig(matrix)
-#print(eigenvectors)
-#matrix = np.dot(matrix.T,matrix)
-#print(matrix)
-#104.4879  9.5197   35.9204
-InverseIteration.gettingEigenVector(matrix, eigenvalues[2])

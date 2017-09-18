@@ -1,10 +1,10 @@
 from mna.tp01.utils.GramSchmidt import *
 import sys
-from copy import copy, deepcopy
 from mna.tp01.utils.HouseHolder import *
+from mna.tp01.utils.InverseIteration import InverseIteration
 
-
-__precision__ = sys.float_info.epsilon
+__precision__ = 10**-5
+# __precision__ = sys.float_info.epsilon
 
 class QRAlgorithm:
 
@@ -54,13 +54,74 @@ class QRAlgorithm:
         eig_val = Q.T.dot(H.dot(Q))
         eig_vec = Q
         I = np.identity(n)
-        while sum(abs(np.diag(eig_val[1:n,:]))>__precision__):
-            mu = QRAlgorithm.WilkinsonShift(eig_val[n-2,n-2], eig_val[n-1,n-1], eig_val[n-2,n-1])
+        known = 1
+        while known<n:
+            while n-1-known >= 0 and eig_val[n-known, n-1-known] < __precision__:
+                known += 1
+                print(known)
+
+            mu = QRAlgorithm.WilkinsonShift(eig_val[n-known-2,n-known-2], eig_val[n-known-1,n-known-1], eig_val[n-known-2,n-known-1])
             Q,R = method(eig_val-mu*I)
             eig_val = R.dot(Q) + I*mu
             eig_vec = eig_vec.dot(Q)
 
         return np.diagonal(eig_val), eig_vec
+
+
+    @staticmethod
+    def wilkinsonEig (matrix, method=GramSchmidt.QR):
+        n = matrix.shape[0]
+        orig = copy(matrix)
+        eig_val = np.zeros(n)
+        QRAlgorithm.rec2Wilkinson(matrix, method, eig_val)
+        # eig_vec = InverseIteration.gettingEigenVector(matrix, eig_val)
+        eig_vec = np.zeros((n,n))
+        for i in range(len(eig_val)):
+            print("EIGVECT " + str(i))
+            aux = InverseIteration.gettingEigenVector(matrix,eig_val[i])
+            eig_vec[:, i] = aux.reshape(n)
+
+        return eig_val, eig_vec
+
+    @staticmethod
+    def recWilkinson(matrix, method, answer):
+        A = matrix
+        n = A[0].size
+        print(n)
+        if n==1:
+            answer[0] = A[0][0]
+        else:
+            I = np.identity(n)
+            while abs(A[n-1,n-2]) > __precision__ :
+                mu = QRAlgorithm.WilkinsonShift(A[n-2,n-2], A[n-1,n-1], A[n-2,n-1])
+                Q,R = method(A-mu*I)
+                A = R.dot(Q) + I*mu
+
+            answer[n-1] = A[n-1,n-1]
+            QRAlgorithm.recWilkinson(A[0:n-1, 0:n-1], method, answer)
+
+
+    @staticmethod
+    def rec2Wilkinson(matrix, method, answer):
+        A = matrix
+        n = A[0].size
+        print("---------------------" + str(n))
+        if n==1:
+            answer[0] = A[0][0]
+        else:
+            lastVal = A[n-1,n-1] + 1
+            QRAlgorithm.HessenbergReductionWithReflector(matrix)
+
+            I = np.identity(n)
+            while abs(lastVal - A[n-1,n-1]) > __precision__ :
+                mu = QRAlgorithm.WilkinsonShift(A[n-2,n-2], A[n-1,n-1], A[n-2,n-1])
+                Q,R = method(A-mu*I)
+                A = R.dot(Q) + I*mu
+                lastVal = A[n-1,n-1]
+
+            answer[n-1] = A[n-1,n-1]
+            QRAlgorithm.rec2Wilkinson(A[0:n-1, 0:n-1], method, answer)
+
 
 
     @staticmethod
@@ -75,7 +136,7 @@ class QRAlgorithm:
         H=np.array(matrix)
         n = H[0].size
         for k in range(n-2):
-            x = deepcopy(col(H[k + 1:n, k]))
+            x = copy(col(H[k + 1:n, k]))
             e1 = col(np.zeros(n-(k+1)))
             e1[0] = 1
             sgn = np.sign(x[0])
@@ -97,7 +158,7 @@ class QRAlgorithm:
         n = H[0].size
         U = np.identity(n)
         for k in range(n - 2):
-            x = deepcopy(col(H[k + 1:n, k]))
+            x = copy(col(H[k + 1:n, k]))
             v = HouseHolder.reflector(row(x)[0])
             identity = np.identity(matrix.shape[0] - v.shape[0])
             z1 = np.zeros([identity.shape[0], v.shape[1]])

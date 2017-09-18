@@ -37,7 +37,7 @@ class HessenbergBasicTestSymetric(unittest.TestCase):
         H = QRAlgorithm.HessenbergReduction(matrix)
         oVa,_ = np.linalg.eig(matrix)
         Va,_ = np.linalg.eig(H)
-        assertEqualMatrix(deepcopy(H),deepcopy(H.T))
+        assertEqualMatrix(copy(H),copy(H.T))
         assertEqualMatrix(H,oH)
         assertAbsEqualMatrix(np.sort(oVa),np.sort(Va))
 
@@ -80,7 +80,7 @@ class HessenbergReflectorTestSymetric(unittest.TestCase):
         H, U = QRAlgorithm.HessenbergReductionWithReflector(matrix)
         oVa,oVe = np.linalg.eig(matrix)
         Va,Ve = np.linalg.eig(H)
-        assertEqualMatrix(deepcopy(H),deepcopy(H.T))
+        assertEqualMatrix(copy(H),copy(H.T))
         assertAbsEqualMatrix(np.sort(oVa),np.sort(Va))
         assertAbsEqualMatrix(H,oH)
         assertAbsEqualMatrix(oVe,U.dot(Ve))

@@ -53,10 +53,13 @@ if args.verbose:
     print("Finding eigenfaces...")
 
 # TODO: Use our functions for this
-# _, singular_values, eigenfaces = np.linalg.svd(train_images, full_matrices=False)
+# _, singular_values, eigenfaces2 = np.linalg.svd(train_images, full_matrices=False)
 # eigenvalues = singular_values ** 2
-eigenvalues, eigenfaces = QRAlgorithm.trivialEig(train_images.T.dot(train_images), HouseHolder.qr)
-
+eigenvalues, subEigenFaces = QRAlgorithm.wilkinsonEig(train_images.dot(train_images.T), HouseHolder.qr)
+# eigenvalues, subEigenFaces = np.linalg.eig(train_images.dot(train_images.T))
+eigenfaces = train_images.T.dot(subEigenFaces.T).T
+row_sums = np.linalg.norm(eigenfaces, axis=1)
+eigenfaces = np.divide(eigenfaces,col(row_sums))
 # Get enough eigenvalues to capture at least the specified variance
 cummulative_sum = 0
 eigenvalues_sum = sum(eigenvalues)
@@ -81,8 +84,8 @@ eigenfaces = eigenfaces[0:used_eigenfaces]
 if args.verbose:
     print("Projecting images to eigenfaces...")
 
-projected_train_imgs = np.dot(train_images, np.transpose(eigenfaces))
-projected_test_imgs = np.dot(test_images, np.transpose(eigenfaces))
+projected_train_imgs = np.dot(train_images, eigenfaces.T)
+projected_test_imgs = np.dot(test_images, eigenfaces.T)
 
 # Show mean face
 # fig, axes = plt.subplots(1,1)

@@ -37,6 +37,7 @@ class InverseIterationTesNbyN(unittest.TestCase):
 
     def test(self):
         size = np.random.randint(10, 100)
+        # size = 240
         matrix = np.array(np.random.rand(size, size))
         # while np.linalg.det(matrix) == 0:
         #     _random_seed = randint(1, 100000)  # Set desired seed here

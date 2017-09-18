@@ -11,12 +11,13 @@ def signZero(n):
         return np.sign(n)
 
 class HouseHolder:
+    @staticmethod
     def qr(matrix):
-        R = deepcopy(np.asmatrix(matrix).astype(float))
+        R = copy(np.asmatrix(matrix).astype(float))
         m = len(matrix)
         Q = np.eye(m).astype(float)
         for k in range(m - 1):
-            u = deepcopy(R[k:m, k])
+            u = copy(R[k:m, k])
             u[0] = u[0] + signZero(u[0]) * norm(u)
             u = u / norm(u)
             R[k:m, k:m] = R[k:m, k:m] - (2.0 * u) * (u.transpose() * R[k:m, k:m])

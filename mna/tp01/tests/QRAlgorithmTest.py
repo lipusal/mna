@@ -6,8 +6,8 @@ import numpy as np
 import unittest
 from random import randint
 
-_random_seed = randint(1,100000) #Set desired seed here
-# _random_seed = 98446 #Set desired seed here
+# _random_seed = randint(1,100000) #Set desired seed here
+_random_seed = 98446 #Set desired seed here
 print("Testing with QRAlgorithm seed {0}".format(_random_seed))
 
 class TrivialQRAlgorithm3by3(unittest.TestCase):
@@ -77,8 +77,9 @@ class WilkinsonQRAlgorithmNbyN(unittest.TestCase):
     def test(self):
         random = np.random
         random.seed(_random_seed)
-        size = random.randint(10,50)
-        matrix = random.rand(size,size)
+        # size = random.randint(10,50)
+        size = 50
+        matrix = random.rand(size,size) * 255
         matrix = matrix.dot(matrix.T)
         oVa,oVe = np.linalg.eig(matrix)
         Va,Ve = QRAlgorithm.wilkinsonEig(matrix)
