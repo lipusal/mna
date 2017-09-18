@@ -8,23 +8,10 @@ from random import randint
 _random_seed = randint(1,100000) #Set desired seed here
 print("Testing with GramSchmidt seed {0}".format(_random_seed))
 
-
-class GramSchmidtTest2by2(unittest.TestCase):
-
-    def test(self):
-        matrix = mnaMat("1 0; 1 4")
-        oQ,oR = np.linalg.qr(matrix)
-        Q,R = GramSchmidt.QR(matrix)
-        assertAbsEqualMatrix(Q,oQ)
-        assertAbsEqualMatrix(R,oR)
-        assertEqualMatrix(matrix,Q.dot(R))
-
 class GramSchmidtTest3by3(unittest.TestCase):
 
     def test(self):
-        random = np.random
-        random.seed(_random_seed)
-        matrix = np.array(random.rand(3,3))
+        matrix = mnaMat("1 0 3; 1 4 5; 2 5 7")
         oQ,oR = np.linalg.qr(matrix)
         Q,R = GramSchmidt.QR(matrix)
         assertAbsEqualMatrix(Q,oQ)

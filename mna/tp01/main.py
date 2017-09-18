@@ -1,6 +1,8 @@
 import argparse
 import numpy as np
 from mna.tp01.utils.images import *
+from mna.tp01.utils.QRAlgorithm import *
+from mna.tp01.utils.HouseHolder import *
 # import matplotlib.pyplot as plt
 from sklearn import svm
 
@@ -51,8 +53,9 @@ if args.verbose:
     print("Finding eigenfaces...")
 
 # TODO: Use our functions for this
-_, singular_values, eigenfaces = np.linalg.svd(train_images, full_matrices=False)
-eigenvalues = singular_values ** 2
+# _, singular_values, eigenfaces = np.linalg.svd(train_images, full_matrices=False)
+# eigenvalues = singular_values ** 2
+eigenvalues, eigenfaces = QRAlgorithm.trivialEig(train_images.T.dot(train_images), HouseHolder.qr)
 
 # Get enough eigenvalues to capture at least the specified variance
 cummulative_sum = 0

@@ -31,12 +31,25 @@ class HouseHolderQRAlgorithm3by3(unittest.TestCase):
         assertAbsEqualMatrix(oVe,Ve)
         assertAbsEqualMatrix(np.sort(oVa),np.sort(Va))
 
+class TrivialQRAlgorithmNbyN(unittest.TestCase):
+
+    def test(self):
+        random = np.random
+        random.seed(_random_seed)
+        size = random.randint(10,50)
+        matrix = random.rand(size,size)
+        matrix = matrix.dot(matrix.T)
+        oVa,oVe = np.linalg.eig(matrix)
+        Va,Ve = QRAlgorithm.trivialEig(matrix)
+        assertAbsEqualMatrix(oVa,Va)
+        assertAbsEqualMatrix(Ve,oVe)
+
 class HouseHolderQRAlgorithmNbyN(unittest.TestCase):
 
     def test(self):
         random = np.random
         random.seed(_random_seed)
-        size = random.randint(10,100)
+        size = random.randint(10,50)
         matrix = random.rand(size,size)
         matrix = matrix.dot(matrix.T)
         oVa,oVe = np.linalg.eig(matrix)
@@ -45,25 +58,12 @@ class HouseHolderQRAlgorithmNbyN(unittest.TestCase):
         assertAbsEqualMatrix(oVe,Ve)
 
 
-class TrivialQRAlgorithmNbyN(unittest.TestCase):
-
-    def test(self):
-        random = np.random
-        random.seed(_random_seed)
-        size = random.randint(10,100)
-        matrix = random.rand(size,size)
-        matrix = matrix.dot(matrix.T)
-        oVa,oVe = np.linalg.eig(matrix)
-        Va,Ve = QRAlgorithm.trivialEig(matrix)
-        assertAbsEqualMatrix(oVa,Va)
-        assertAbsEqualMatrix(Ve,oVe)
-
 class betterCheckQRAlgorithmNbyN(unittest.TestCase):
 
     def test(self):
         random = np.random
         random.seed(_random_seed)
-        size = random.randint(10,100)
+        size = random.randint(10,50)
         matrix = random.rand(size,size)
         matrix = matrix.dot(matrix.T)
         oVa,oVe = np.linalg.eig(matrix)
@@ -77,7 +77,7 @@ class WilkinsonQRAlgorithmNbyN(unittest.TestCase):
     def test(self):
         random = np.random
         random.seed(_random_seed)
-        size = random.randint(10,100)
+        size = random.randint(10,50)
         matrix = random.rand(size,size)
         matrix = matrix.dot(matrix.T)
         oVa,oVe = np.linalg.eig(matrix)

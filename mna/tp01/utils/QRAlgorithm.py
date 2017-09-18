@@ -3,6 +3,9 @@ import sys
 from copy import copy, deepcopy
 from mna.tp01.utils.HouseHolder import *
 
+
+__precision__ = sys.float_info.epsilon
+
 class QRAlgorithm:
 
     # This is the most basic algorithm
@@ -15,8 +18,7 @@ class QRAlgorithm:
         H = matrix
         eig_val = Q.T.dot(H.dot(Q))
         eig_vec = Q
-        for i in range(500):
-        # while sum(abs(np.diag(eig_val[1:n,:]))>0.0001):
+        while sum(abs(np.diag(eig_val[1:n,:]))> __precision__*n):
             Q,R = method(eig_val)
             eig_val = R.dot(Q)
             eig_vec = eig_vec.dot(Q)
@@ -24,7 +26,7 @@ class QRAlgorithm:
         return np.diagonal(eig_val), eig_vec
 
     # This is the most basic algorithm
-    # checks when the subdiagonal converges to 0
+    # checks in order each element of subdiagonal is 0
     # Calculate the eigenVectors multiplying every iteration
     @staticmethod
     def betterCheckEig (matrix, method=GramSchmidt.QR):
@@ -35,7 +37,7 @@ class QRAlgorithm:
         eig_vec = Q
         known = 0
         while known<n:
-            while n-1-known >= 0 and eig_val[n-known, n-1-known] < sys.float_info.epsilon :
+            while n-1-known >= 0 and eig_val[n-known, n-1-known] < sys.float_info.epsilon:
                 known += 1
 
             Q,R = method(eig_val)
@@ -52,7 +54,7 @@ class QRAlgorithm:
         eig_val = Q.T.dot(H.dot(Q))
         eig_vec = Q
         I = np.identity(n)
-        while sum(abs(np.diag(eig_val[1:n,:]))>0.000001):
+        while sum(abs(np.diag(eig_val[1:n,:]))>__precision__):
             mu = QRAlgorithm.WilkinsonShift(eig_val[n-2,n-2], eig_val[n-1,n-1], eig_val[n-2,n-1])
             Q,R = method(eig_val-mu*I)
             eig_val = R.dot(Q) + I*mu
@@ -96,7 +98,7 @@ class QRAlgorithm:
         U = np.identity(n)
         for k in range(n - 2):
             x = deepcopy(col(H[k + 1:n, k]))
-            v = HouseholderReflector(row(x)[0])
+            v = HouseHolder.reflector(row(x)[0])
             identity = np.identity(matrix.shape[0] - v.shape[0])
             z1 = np.zeros([identity.shape[0], v.shape[1]])
             z2 = np.zeros([ v.shape[0], identity.shape[1]])

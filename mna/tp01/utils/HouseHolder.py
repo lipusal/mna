@@ -32,9 +32,9 @@ class HouseHolder:
         return Q, R
 
 
-def HouseholderReflector(vector):
-    e1 = np.zeros(np.size(vector))
-    e1[0] = 1
-    u = vector - np.dot(np.linalg.norm(vector), e1)
-    u = u / np.linalg.norm(u)
-    return np.identity(np.size(vector)) - np.dot(2, np.dot(col(u),row(u)))
+    def reflector(vector):
+        e1 = np.zeros(np.size(vector))
+        e1[0] = 1
+        u = vector - np.dot(np.linalg.norm(vector), e1)
+        u = u / np.linalg.norm(u)
+        return np.identity(np.size(vector)) - np.dot(2, np.dot(col(u),row(u)))

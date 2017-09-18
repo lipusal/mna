@@ -21,26 +21,12 @@ class HouseHolderTest4by4(unittest.TestCase):
         assertAbsEqualMatrix(q, pyQ)
         assertAbsEqualMatrix(r, pyR)
 
-
-class HouseHolderTestSymetric(unittest.TestCase):
-    def test(self):
-        random = np.random
-        random.seed(_random_seed)
-        size = random.randint(100)
-        matrix = random.rand(size, size) * 10000
-        matrix = matrix.dot(matrix.T)
-        (pyQ, pyR) = np.linalg.qr(matrix)
-        (q, r) = HouseHolder.qr(matrix)
-        assertAbsEqualMatrix(q, pyQ)
-        assertAbsEqualMatrix(r, pyR, 4)
-
-
 class HouseHolderTestNbyN(unittest.TestCase):
 
     def test(self):
         random = np.random
         random.seed(_random_seed)
-        size = random.randint(100)
+        size = random.randint(10,50)
         matrix = random.rand(size, size)
         (pyQ, pyR) = np.linalg.qr(matrix)
         (q, r) = HouseHolder.qr(matrix)
@@ -48,12 +34,11 @@ class HouseHolderTestNbyN(unittest.TestCase):
         assertAbsEqualMatrix(r, pyR)
 
 
+
 class HouseholderReflectorTest(unittest.TestCase):
 
-        def test(self):
-            vector = np.asarray([4, 3, 2, 6])
-            reflector = HouseholderReflector(vector)
-            result = np.dot(reflector, vector)
-            print(reflector)
-            print(result)
-            assert result[0] == np.linalg.norm(vector)
+    def test(self):
+        vector = np.asarray([4, 3, 2, 6])
+        reflector = HouseHolder.reflector(vector)
+        result = np.dot(reflector, vector)
+        assert result[0] == np.linalg.norm(vector)
