@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 import os
 from sklearn import svm
 import time
+import cv2
+import mna.tp01.open_cv.FaceDetection as fd
 
 parser = argparse.ArgumentParser(description="Face recognizer. Receives an image and identifies it in a database.")
 parser.add_argument("directory", help="Directory from which to load images. Directory should have further "
@@ -37,8 +39,8 @@ if args.verbose:
 
 # Make numbers easier to play with
 # TODO: Define whether ** 2 stays or not
-train_images = (np.asarray(train_images) / 255.0) ** 2
-test_images = (np.asarray(test_images) / 255.0) ** 2
+train_images = (np.asarray(train_images) / 255.0)
+test_images = (np.asarray(test_images) / 255.0)
 
 # Subtract mean from train images
 mean_face = mean_image(train_images)
@@ -130,20 +132,65 @@ eigen1 = (np.reshape(eigenfaces[0,:],[versize,horsize]))*255
 fig, axes = plt.subplots(1,1)
 axes.imshow(eigen1,cmap='gray')
 fig.suptitle('Primera autocara')
-fig.show()
 
 eigen2 = (np.reshape(eigenfaces[1,:],[versize,horsize]))*255
 fig, axes = plt.subplots(1,1)
 axes.imshow(eigen2,cmap='gray')
 fig.suptitle('Segunda autocara')
-fig.show()
 
 eigen3 = (np.reshape(eigenfaces[2,:],[versize,horsize]))*255
 fig, axes = plt.subplots(1,1)
 axes.imshow(eigen2,cmap='gray')
 fig.suptitle('Tercera autocara')
-fig.show()
+print(test_classes)
 
 clf.fit(projected_train_imgs, train_classes)
 classifications = clf.score(projected_test_imgs, test_classes)
 print("Classification accuracy with %i eigenfaces: %g%%" % (used_eigenfaces, classifications*100))
+
+cascPath = "./open_cv/haarcascade_frontalface_default.xml"
+faceCascade = cv2.CascadeClassifier(cascPath)
+
+print(os.path.dirname(os.path.realpath(__file__)))
+i=0
+video_capture = cv2.VideoCapture(0)
+while(True):
+    # Capture frame-by-frame
+    ret, frame = video_capture.read()
+
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+    faces = faceCascade.detectMultiScale(
+        gray,
+        scaleFactor=1.2,
+        minNeighbors=5,
+        minSize=(92, 112)
+    )
+
+    # Draw a rectangle around the faces
+    for f in faces:
+        x, y, w, h = fd.resizeFace(f)
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        newImg = fd.cropImage(frame, fd.resizeFace(f))
+        newImg = fd.resizeImg(newImg)
+        newImg = newImg.convert('L')
+        newImg = np.array(newImg).ravel()
+        newImg = (np.array(newImg) / 255.0) - mean_face
+        newImg = np.dot(np.array(newImg), eigenfaces.T)
+        name = clf.predict([newImg])
+        cv2.putText(frame, name[0], (x, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 4)
+
+    # Display the resulting frame
+    cv2.imshow('Video', frame)
+
+    if cv2.waitKey(1) & 0xFF == ord(' ') and frame is not None and len(faces) > 0:
+        newImg = fd.cropImage(frame, fd.resizeFace(faces[0]))
+        newImg = fd.resizeImg(newImg)
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+        # When everything is done, release the capture
+video_capture.release()
+cv2.destroyAllWindows()
+
