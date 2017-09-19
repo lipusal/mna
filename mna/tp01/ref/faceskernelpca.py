@@ -64,10 +64,10 @@ K = K - np.dot(unoM,K) - np.dot(K,unoM) + np.dot(unoM,np.dot(K,unoM))
 
 #Autovalores y autovectores
 w,alpha = np.linalg.eigh(K)
-lambdas = w/trnno
+# lambdas = w/trnno
 lambdas = w
 
-#Los autovalores vienen en orden descendente. Lo cambio 
+#Los autovalores vienen en orden ascendente. Lo cambio
 lambdas = np.flipud(lambdas)
 alpha   = np.fliplr(alpha)
 
