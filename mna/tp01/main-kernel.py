@@ -1,6 +1,6 @@
 import argparse
 import numpy as np
-from mna.tp01.utils.images import *
+from mna.tp01.utils.Images import *
 # import matplotlib.pyplot as plt
 import os
 from sklearn import svm
@@ -19,7 +19,7 @@ parser.add_argument("--time", "-t", help="Print elapsed program time", action="s
 args = parser.parse_args()
 
 if args.time:
-    import mna.tp01.utils.timer
+    import mna.tp01.utils.Timer
 
 # Open images and separate them in training and testing groups
 if args.verbose:

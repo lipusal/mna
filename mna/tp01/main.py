@@ -1,8 +1,8 @@
 import argparse
 import numpy as np
-from mna.tp01.utils.images import *
+from mna.tp01.utils.Images import *
 from mna.tp01.utils.QRAlgorithm import *
-from mna.tp01.utils.HouseHolder import *
+from mna.tp01.utils.EigAlgorithm import *
 import matplotlib.pyplot as plt
 # import matplotlib.pyplot as plt
 import os
@@ -25,7 +25,7 @@ parser.add_argument("--time", "-t", help="Print elapsed program time", action="s
 args = parser.parse_args()
 
 if args.time:
-    import mna.tp01.utils.timer
+    import mna.tp01.utils.Timer
 
 # Open images and separate them in training and testing groups
 if args.verbose:
@@ -61,7 +61,7 @@ if args.verbose:
 # _, singular_values, eigenfaces2 = np.linalg.svd(train_images, full_matrices=False)
 # eigenvalues = singular_values ** 2
 t0 = time.time()
-eigenvalues, subEigenFaces = QRAlgorithm.wilkinsonEig(train_images.dot(train_images.T), HouseHolder.qr)
+eigenvalues, subEigenFaces = EigAlgorithm.wilkinsonEig(train_images.dot(train_images.T), QRAlgorithm.HouseHolder)
 # eigenvalues, subEigenFaces = QRAlgorithm.wilkinsonEig(QRAlgorithm.HessenbergReduction(train_images.dot(train_images.T)), HouseHolder.qr)
 print("It took " + str(time.time()-t0) + "seconds ")
 # eigenvalues, subEigenFaces = np.linalg.eig(train_images.dot(train_images.T))
@@ -157,6 +157,10 @@ video_capture = cv2.VideoCapture(0)
 while(True):
     # Capture frame-by-frame
     ret, frame = video_capture.read()
+
+    if not ret:
+        print("The video capture is not working.")
+        continue
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 

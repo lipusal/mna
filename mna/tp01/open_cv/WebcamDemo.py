@@ -15,6 +15,10 @@ def camScan():
             # Capture frame-by-frame
             ret, frame = video_capture.read()
 
+            if not ret:
+                print("The video capture is not working.")
+                continue
+
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
             faces = faceCascade.detectMultiScale(

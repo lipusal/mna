@@ -23,8 +23,6 @@ def saveImg(newImg, personName):
     photoName = getHighestPhotoNum(files)
     newImg.save(directory + str(photoName) + ".pgm")
 
-
-
 cascPath = "./haarcascade_frontalface_default.xml"
 faceCascade = cv2.CascadeClassifier(cascPath)
 
@@ -37,11 +35,15 @@ while True:
     name = input("Enter your name: ")
 
     if(name == "q"):
-        break;
+        break
 
     while True:
         # Capture frame-by-frame
         ret, frame = video_capture.read()
+
+        if not ret:
+            print("The video capture is not working.")
+            continue
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
