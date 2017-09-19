@@ -5,6 +5,7 @@ from mna.tp01.utils.QRAlgorithm import *
 from mna.tp01.utils.HouseHolder import *
 import matplotlib.pyplot as plt
 # import matplotlib.pyplot as plt
+import os
 from sklearn import svm
 import time
 
@@ -109,12 +110,15 @@ projected_test_imgs = np.dot(test_images, eigenfaces.T)
 
 clf = svm.LinearSVC()
 
-# Get which pictures belong to which individual
+# Get which pictures belong to which subdirectory
+subdirs = [os.path.split(subdir)[-1] for subdir in get_subdirs(args.directory)]
 train_classes = list()
 test_classes = list()
 for i in range(num_individuals):
-    train_classes += [i] * args.num_train
-    test_classes += [i] * args.num_test
+    # Directories were traversed in the same order as `subdirs`, so we know we are putting the right directory to each
+    # picture
+    train_classes += [subdirs[i]] * args.num_train
+    test_classes += [subdirs[i]] * args.num_test
 
 if args.verbose:
     print("Training and testing picture categories...")

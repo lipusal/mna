@@ -5,12 +5,12 @@ import numpy as np
 
 def open_images(args):
     """Take arguments received from command line and process pictures. Traverse subdirectories from the given base
-    directory and convert found images, ensuring each individual has the same number of pictures and that all pictures
-    have the same size. Return a tuple of the form ([], []), where the first list is composed of the training images and
-    the second list is composed of the test images."""
+    directory (in the same order as returned by get_subdirs) and convert found images, ensuring each individual has the
+    same number of pictures and that all pictures have the same size. Return a tuple of the form ([], []), where the
+    first list is composed of the training images and the second list is composed of the test images."""
     base_dir = normalize_dir(args.directory)
     # Get all normalized subdirectories, relative to the base directory
-    subdirs = [normalize_dir(dir, base_dir) for dir in listdir(base_dir) if path.isdir(path.join(base_dir, dir))]
+    subdirs = get_subdirs(base_dir)
     num_subdirs = len(subdirs)
     if args.verbose:
         print("Detected %i subdirectories, assuming one per individual" % num_subdirs)
@@ -39,6 +39,12 @@ def open_images(args):
         result[1] += test_pics
 
     return num_subdirs, result[0], result[1]
+
+
+def get_subdirs(base_dir):
+    """"Get the subdirectories of the given base directory."""
+    base_dir = normalize_dir(base_dir)
+    return [normalize_dir(dir, base_dir) for dir in listdir(base_dir) if path.isdir(path.join(base_dir, dir))]
 
 
 def mean_image(images):
