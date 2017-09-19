@@ -3,8 +3,10 @@ import numpy as np
 from mna.tp01.utils.images import *
 from mna.tp01.utils.QRAlgorithm import *
 from mna.tp01.utils.HouseHolder import *
+import matplotlib.pyplot as plt
 # import matplotlib.pyplot as plt
 from sklearn import svm
+import time
 
 parser = argparse.ArgumentParser(description="Face recognizer. Receives an image and identifies it in a database.")
 parser.add_argument("directory", help="Directory from which to load images. Directory should have further "
@@ -55,9 +57,13 @@ if args.verbose:
 # TODO: Use our functions for this
 # _, singular_values, eigenfaces2 = np.linalg.svd(train_images, full_matrices=False)
 # eigenvalues = singular_values ** 2
+t0 = time.time()
 eigenvalues, subEigenFaces = QRAlgorithm.wilkinsonEig(train_images.dot(train_images.T), HouseHolder.qr)
+# eigenvalues, subEigenFaces = QRAlgorithm.wilkinsonEig(QRAlgorithm.HessenbergReduction(train_images.dot(train_images.T)), HouseHolder.qr)
+print("It took " + str(time.time()-t0) + "seconds ")
 # eigenvalues, subEigenFaces = np.linalg.eig(train_images.dot(train_images.T))
 eigenfaces = train_images.T.dot(subEigenFaces.T).T
+
 row_sums = np.linalg.norm(eigenfaces, axis=1)
 eigenfaces = np.divide(eigenfaces,col(row_sums))
 # Get enough eigenvalues to capture at least the specified variance
@@ -112,6 +118,27 @@ for i in range(num_individuals):
 
 if args.verbose:
     print("Training and testing picture categories...")
+
+    #Primera autocara...
+    horsize     = 92
+versize     = 112
+eigen1 = (np.reshape(eigenfaces[0,:],[versize,horsize]))*255
+fig, axes = plt.subplots(1,1)
+axes.imshow(eigen1,cmap='gray')
+fig.suptitle('Primera autocara')
+fig.show()
+
+eigen2 = (np.reshape(eigenfaces[1,:],[versize,horsize]))*255
+fig, axes = plt.subplots(1,1)
+axes.imshow(eigen2,cmap='gray')
+fig.suptitle('Segunda autocara')
+fig.show()
+
+eigen3 = (np.reshape(eigenfaces[2,:],[versize,horsize]))*255
+fig, axes = plt.subplots(1,1)
+axes.imshow(eigen2,cmap='gray')
+fig.suptitle('Tercera autocara')
+fig.show()
 
 clf.fit(projected_train_imgs, train_classes)
 classifications = clf.score(projected_test_imgs, test_classes)

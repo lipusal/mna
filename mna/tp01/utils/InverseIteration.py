@@ -9,19 +9,16 @@ class InverseIteration:
         n = len(matrix)
         eye = np.eye(n)
         eye = eye*eigenvalue
-        eigenvector = np.random.rand(1,n)
-        eigenvector = eigenvector.T
-        aux = np.dot(np.linalg.inv(matrix - eye), eigenvector)
+        # eigenvector = np.random.rand(1,n)
+        eigenvector = np.ones((1,n)).T
+        inv = np.linalg.inv(matrix - eye)
+        aux = np.dot(inv, eigenvector)
         aux = aux/np.linalg.norm(aux)
         i = 0
-        while np.linalg.norm(np.subtract(eigenvector,aux))>0.0000005 and i<100:
-        #while (eigenvector==aux).all() == False:
-        #for k in range(20):
+        while np.linalg.norm(np.subtract(eigenvector,aux))>10**-5 and i<100:
             i = i + 1
             eigenvector = aux
-            aux = np.dot(np.linalg.inv(matrix - eye), eigenvector)
+            aux = np.dot(inv, eigenvector)
             aux = aux/np.linalg.norm(aux)
 
-        #print (eigenvector)
         return eigenvector
-

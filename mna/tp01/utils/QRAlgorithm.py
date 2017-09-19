@@ -1,3 +1,5 @@
+import time
+
 from mna.tp01.utils.GramSchmidt import *
 import sys
 from mna.tp01.utils.HouseHolder import *
@@ -47,7 +49,7 @@ class QRAlgorithm:
         return np.diagonal(eig_val), eig_vec
 
     @staticmethod
-    def wilkinsonEig (matrix, method=GramSchmidt.QR):
+    def wilkinsonEig2 (matrix, method=GramSchmidt.QR):
         n = matrix[0].size
         Q,R = method(matrix)
         H = matrix
@@ -72,14 +74,24 @@ class QRAlgorithm:
     def wilkinsonEig (matrix, method=GramSchmidt.QR):
         n = matrix.shape[0]
         orig = copy(matrix)
+        t0 = time.time()
+        print("RED IT TOOK " + str(time.time()-t0))
         eig_val = np.zeros(n)
+        print("Calculating eigVal")
+        t0= time.time()
         QRAlgorithm.rec2Wilkinson(matrix, method, eig_val)
+        print("IT took " + str(time.time()-t0))
         # eig_vec = InverseIteration.gettingEigenVector(matrix, eig_val)
         eig_vec = np.zeros((n,n))
+        print("Calculating eigVec")
+        t0= time.time()
         for i in range(len(eig_val)):
-            print("EIGVECT " + str(i))
-            aux = InverseIteration.gettingEigenVector(matrix,eig_val[i])
-            eig_vec[:, i] = aux.reshape(n)
+                # print("EIGVECT " + str(i))
+                aux = InverseIteration.gettingEigenVector(matrix,eig_val[i])
+                eig_vec[:, i] = aux.reshape(n)
+
+        print("IT took " + str(time.time()-t0))
+
 
         return eig_val, eig_vec
 
@@ -105,18 +117,28 @@ class QRAlgorithm:
     def rec2Wilkinson(matrix, method, answer):
         A = matrix
         n = A[0].size
-        print("---------------------" + str(n))
+        # print("---------------------" + str(n))
         if n==1:
             answer[0] = A[0][0]
         else:
             lastVal = A[n-1,n-1] + 1
-            QRAlgorithm.HessenbergReductionWithReflector(matrix)
+            # QRAlgorithm.HessenbergReductionWithReflector(matrix)
 
             I = np.identity(n)
             while abs(lastVal - A[n-1,n-1]) > __precision__ :
+                t0 = time.time()
+                # print("Shifting")
                 mu = QRAlgorithm.WilkinsonShift(A[n-2,n-2], A[n-1,n-1], A[n-2,n-1])
+                # print(time.time() - t0)
+                # t0 = time.time()
+                # print("Calculating first QR")
                 Q,R = method(A-mu*I)
+                # print(time.time() - t0)
+                # t0 = time.time()
+                # print("Calculating next A")
                 A = R.dot(Q) + I*mu
+                # print(time.time() - t0)
+                # t0 = time.time()
                 lastVal = A[n-1,n-1]
 
             answer[n-1] = A[n-1,n-1]
