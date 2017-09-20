@@ -7,3 +7,4 @@ nose
 nose-timer
 opencv-python
 python-resize-image
+pygame

@@ -3,8 +3,7 @@ import mna.tp01.open_cv.FaceDetection as fd
 import os
 from PIL import Image
 import scipy.misc
-
-
+from pygame import mixer
 
 def getHighestPhotoNum(files):
     a = -1
@@ -23,6 +22,8 @@ def saveImg(newImg, personName):
     photoName = getHighestPhotoNum(files)
     newImg.save(directory + str(photoName) + ".pgm")
 
+mixer.init()
+mixer.music.load('../res/camera_sound.mp3')
 cascPath = "./haarcascade_frontalface_default.xml"
 faceCascade = cv2.CascadeClassifier(cascPath)
 
@@ -58,15 +59,15 @@ while True:
         for (x, y, w, h) in faces:
             x, y, w, h = fd.resizeShape(x,y,w,h)
             cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
-            cv2.putText(frame, "Juanfra", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 6)
 
         # Display the resulting frame
         cv2.imshow('Video', frame)
 
-        if cv2.waitKey(1) & 0xFF == ord(' ') and frame is not None and len(faces) > 0:
+        if cv2.waitKey(1) & 0xFF == ord('p') and frame is not None and len(faces) > 0:
             newImg = fd.cropImage(frame, fd.resizeFace(faces[0]))
             newImg = fd.resizeImg(newImg)
             saveImg(newImg, name)
+            mixer.music.play()
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
