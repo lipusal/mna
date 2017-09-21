@@ -67,8 +67,16 @@ print("It took " + str(time.time()-t0) + "seconds ")
 # eigenvalues, subEigenFaces = np.linalg.eig(train_images.dot(train_images.T))
 eigenfaces = train_images.T.dot(subEigenFaces.T).T
 
-row_sums = np.linalg.norm(eigenfaces, axis=1)
-eigenfaces = np.divide(eigenfaces,col(row_sums))
+# Get the keys that would sort eigenvalues by descending absolute value
+keys = np.argsort(np.absolute(eigenvalues))[::-1]
+# Sort eigenvalues, and their corresponding eigenfaces, by these keys
+eigenvalues = np.absolute([eigenvalues[key] for key in keys])
+eigenfaces = np.asarray([eigenfaces[key] for key in keys])
+
+# Normalize eigenfaces (i.e. divide by their norm)
+col_norms = np.linalg.norm(eigenfaces, axis=1)
+eigenfaces = np.divide(eigenfaces, col(col_norms))
+
 # Get enough eigenvalues to capture at least the specified variance
 cummulative_sum = 0
 eigenvalues_sum = sum(eigenvalues)
@@ -87,7 +95,8 @@ if args.verbose:
     else:
         print("Captured desired variance (%g) with %i/%i eigenfaces" % (args.cutoff, used_eigenfaces, len(eigenfaces)))
 
-eigenfaces = eigenfaces[0:40]
+# Truncate number of used eigenfaces
+eigenfaces = eigenfaces[0:used_eigenfaces]
 
 # Project each image to all chosen eigenfaces
 if args.verbose:
