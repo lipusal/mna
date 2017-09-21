@@ -205,6 +205,8 @@ while True:
     video_capture.release()
     cv2.destroyAllWindows()
 
+    print(success)
+
     if success >= 5:
         print("Welcome " + username + ", type 'exit' to exit")
         while True:

@@ -1,9 +1,18 @@
 import argparse
+
+from cv2 import cv2
+import mna.tp01.open_cv.FaceDetection as fd
+
 import numpy as np
+import time
+
+from mna.tp01.utils.EigAlgorithm import EigAlgorithm
 from mna.tp01.utils.Images import *
 # import matplotlib.pyplot as plt
 import os
 from sklearn import svm
+
+from mna.tp01.utils.QRAlgorithm import QRAlgorithm
 
 parser = argparse.ArgumentParser(description="Face recognizer. Receives an image and identifies it in a database.")
 parser.add_argument("directory", help="Directory from which to load images. Directory should have further "
@@ -68,10 +77,15 @@ if args.verbose:
     print("Finding eigenfaces...")
 
 # TODO: Use our functions for this
-eigenvalues, eigenfaces = np.linalg.eigh(train_kernel)
+t0 = time.time()
+eigenvalues, eigenfaces = EigAlgorithm.wilkinsonEig(train_kernel, QRAlgorithm.HouseHolder)
+print("It took " + str(time.time()-t0) + "seconds ")
+# eigenvalues, subEigenFaces = np.linalg.eig(train_images.dot(train_images.T))
+# eigenfaces = train_images.T.dot(subEigenFaces.T).T
+# eigenvalues, eigenfaces = np.linalg.eigh(train_kernel)
 # Eigenvalues/vectors are returned in ascending order, flip to descending
-eigenvalues = np.flipud(eigenvalues)
-eigenfaces = np.fliplr(eigenfaces)
+# eigenvalues = np.flipud(eigenvalues)
+# eigenfaces = np.fliplr(eigenfaces)
 
 # Normalize eigenfaces (i.e. divide by their norm)
 for i in range(len(eigenfaces)):
@@ -138,3 +152,62 @@ projected_test_imgs = projected_test_imgs[:, 0:used_eigenfaces]
 clf.fit(projected_train_imgs, train_classes)
 classifications = clf.score(projected_test_imgs, test_classes)
 print("Classification accuracy with %i eigenfaces: %g%%" % (used_eigenfaces, classifications*100))
+
+
+cascPath = "./open_cv/haarcascade_frontalface_default.xml"
+faceCascade = cv2.CascadeClassifier(cascPath)
+
+print(os.path.dirname(os.path.realpath(__file__)))
+i=0
+video_capture = cv2.VideoCapture(0)
+ones_camera = np.ones([1, num_train_pics]) / num_train_pics
+
+while(True):
+    # Capture frame-by-frame
+    ret, frame = video_capture.read()
+
+    if not ret:
+        # print("The video capture is not working.")
+        continue
+
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+    faces = faceCascade.detectMultiScale(
+        gray,
+        scaleFactor=1.1,
+        minNeighbors=5,
+        minSize=(92, 112)
+    )
+
+    # Draw a rectangle around the faces
+    for f in faces:
+        x, y, w, h = fd.resizeFace(f)
+        if x<0 or y<0 or x+w>1280 or y+h>1280:
+            continue
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        newImg = fd.cropImage(frame, fd.resizeFace(f))
+        newImg = fd.resizeImg(newImg)
+        newImg = newImg.convert('L')
+        newImg = np.array(newImg).ravel()
+        newImg = (np.asarray(newImg) - 127.5) / 127.5
+        newImgKernel = ((np.dot(newImg, train_images.T) / num_train_pics) + 1) ** degree
+        newImgKernel = newImgKernel - np.dot(ones_camera, train_kernel) - np.dot(newImgKernel, ones_train) + np.dot(
+            ones_camera, np.dot(train_kernel, ones_train))
+        projectedNewImg = np.dot(newImgKernel, eigenfaces)
+        name = clf.predict(projectedNewImg)
+        cv2.putText(frame, name[0], (x, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 4)
+
+    # Display the resulting frame
+    cv2.imshow('Video', frame)
+
+    if cv2.waitKey(1) & 0xFF == ord(' ') and frame is not None and len(faces) > 0:
+        newImg = fd.cropImage(frame, fd.resizeFace(faces[0]))
+        newImg = fd.resizeImg(newImg)
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+        # When everything is done, release the capture
+video_capture.release()
+cv2.destroyAllWindows()
+

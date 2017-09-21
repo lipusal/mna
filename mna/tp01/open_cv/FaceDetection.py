@@ -29,10 +29,16 @@ def cropImage(img, face):
 def resizeImg(img):
     return resizeimage.resize_cover(Image.fromarray(img), [92, 112])
 
-def resizeShape(x,y,w,h):
-    height = int(w * 112 / 92)
-    up = height // 10
+def resizeShapeH(x,y,w,h):
+    height = int(w * 92 / 112)
+    up = h // 10
     return x, (y - up), w, height
+
+
+def resizeShape(x,y,w,h):
+    width = int(h * 92 / 112)
+    right = w // 10
+    return (x+right), y, width, h
 
 def resizeFace(face):
     return resizeShape(face[0],face[1],face[2],face[3])

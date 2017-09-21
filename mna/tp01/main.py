@@ -87,7 +87,7 @@ if args.verbose:
     else:
         print("Captured desired variance (%g) with %i/%i eigenfaces" % (args.cutoff, used_eigenfaces, len(eigenfaces)))
 
-eigenfaces = eigenfaces[0:used_eigenfaces]
+eigenfaces = eigenfaces[0:40]
 
 # Project each image to all chosen eigenfaces
 if args.verbose:
@@ -125,8 +125,8 @@ for i in range(num_individuals):
 if args.verbose:
     print("Training and testing picture categories...")
 
-    #Primera autocara...
-    horsize     = 92
+#Primera autocara...
+horsize     = 92
 versize     = 112
 eigen1 = (np.reshape(eigenfaces[0,:],[versize,horsize]))*255
 fig, axes = plt.subplots(1,1)
