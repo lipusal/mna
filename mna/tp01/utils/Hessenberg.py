@@ -1,5 +1,5 @@
-from mna.tp01.utils.GramSchmidt import *
-from mna.tp01.utils.HouseHolder import *
+from mna.tp01.utils.QRAlgorithm import *
+from mna.tp01.utils.EigAlgorithm import *
 
 
 class Hessenberg:
@@ -12,7 +12,7 @@ class Hessenberg:
         U = np.identity(n)
         for k in range(n - 2):
             x = copy(col(H[k + 1:n, k]))
-            v = HouseHolder.reflector(row(x)[0])
+            v = QRAlgorithm.reflector(row(x)[0])
             identity = np.identity(matrix.shape[0] - v.shape[0])
             z1 = np.zeros([identity.shape[0], v.shape[1]])
             z2 = np.zeros([v.shape[0], identity.shape[1]])
