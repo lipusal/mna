@@ -10,6 +10,7 @@ from sklearn import svm
 import time
 import cv2
 import mna.tp01.open_cv.FaceDetection as fd
+from pygame import mixer
 
 parser = argparse.ArgumentParser(description="Face recognizer. Receives an image and identifies it in a database.")
 parser.add_argument("directory", help="Directory from which to load images. Directory should have further "
@@ -22,10 +23,15 @@ parser.add_argument("--verbose", "-v", help="Print verbose information while run
 parser.add_argument("--cutoff", "-c", help="Percentage of captured variance at which to cut off using eigenfaces. "
                                            "Decimal in (0, 1]. Default is 0.9", type=float, default=0.9)
 parser.add_argument("--time", "-t", help="Print elapsed program time", action="store_true", default=False)
+parser.add_argument("--sound", "-s", help="Play with sounds", action="store_true", default=False)
 args = parser.parse_args()
 
+soundEnabled = False
 if args.time:
     import mna.tp01.utils.Timer
+
+if args.sound:
+    soundEnabled = True
 
 # Open images and separate them in training and testing groups
 if args.verbose:
@@ -152,6 +158,7 @@ cascPath = "./open_cv/haarcascade_frontalface_default.xml"
 faceCascade = cv2.CascadeClassifier(cascPath)
 
 print(os.path.dirname(os.path.realpath(__file__)))
+mixer.init()
 i=0
 while True:
 
@@ -205,14 +212,18 @@ while True:
     video_capture.release()
     cv2.destroyAllWindows()
 
-    print(success)
-
     if success >= 5:
         print("Welcome " + username + ", type 'exit' to exit")
+        if soundEnabled:
+            mixer.music.load('./res/access_granted.mp3')
+            mixer.music.play()
         while True:
             exit = input()
             if exit == "exit":
                 break
     else:
         print("You are not " + username + " , don't try to fool me.")
+        if soundEnabled:
+            mixer.music.load('./res/error.mp3')
+            mixer.music.play()
 
