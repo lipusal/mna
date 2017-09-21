@@ -139,28 +139,28 @@ class EigAlgorithm:
         if n==1:
             answer[0] = A[0][0]
         else:
-
-            mid = n//2
-            i=1
-            while i<n:
-                search = int(mid - (i//2 * (-1 + 2*(i%2))))
-                # search = i
-                if abs(A[search, search-1])<0.1:
-                    if search==n-1 :
-                        answer[search] = A[search,search]
-                        EigAlgorithm.rec2Wilkinson(A[0:search, 0:search], method, answer)
-                        return
-
-                    if search == 1:
-                        answer[search] = A[search,search]
-                        answer[0] = A[0,0]
-                        EigAlgorithm.rec2Wilkinson(A[2:n, 2:n], method, answer[2:n])
-                        return
-
-                    EigAlgorithm.rec2Wilkinson(A[0:search, 0:search],method, answer[0:search])
-                    EigAlgorithm.rec2Wilkinson(A[search:n, search:n],method, answer[search:n])
-                    return
-                i+=1
+            #
+            # mid = n//2
+            # i=1
+            # while i<n:
+            #     search = int(mid - (i//2 * (-1 + 2*(i%2))))
+            #     # search = i
+            #     if abs(A[search, search-1])<0.1:
+            #         if search==n-1 :
+            #             answer[search] = A[search,search]
+            #             EigAlgorithm.rec2Wilkinson(A[0:search, 0:search], method, answer)
+            #             return
+            #
+            #         if search == 1:
+            #             answer[search] = A[search,search]
+            #             answer[0] = A[0,0]
+            #             EigAlgorithm.rec2Wilkinson(A[2:n, 2:n], method, answer[2:n])
+            #             return
+            #
+            #         EigAlgorithm.rec2Wilkinson(A[0:search, 0:search],method, answer[0:search])
+            #         EigAlgorithm.rec2Wilkinson(A[search:n, search:n],method, answer[search:n])
+            #         return
+            #     i+=1
 
 
             lastVal = A[n-1,n-1] + 1

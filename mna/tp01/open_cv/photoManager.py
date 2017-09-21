@@ -58,7 +58,10 @@ while True:
         # Draw a rectangle around the faces
         for (x, y, w, h) in faces:
             x, y, w, h = fd.resizeShape(x,y,w,h)
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
             cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+            cv2.putText(frame, name, (x, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 4)
+
 
         # Display the resulting frame
         cv2.imshow('Video', frame)
@@ -70,7 +73,7 @@ while True:
             mixer.music.play()
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+            exit(0)
 
     # When everything is done, release the capture
     video_capture.release()

@@ -174,6 +174,8 @@ while(True):
     # Draw a rectangle around the faces
     for f in faces:
         x, y, w, h = fd.resizeFace(f)
+        if x<0 or y<0 or x+w>1280 or y+h>1280:
+            continue
         cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
         newImg = fd.cropImage(frame, fd.resizeFace(f))
         newImg = fd.resizeImg(newImg)
