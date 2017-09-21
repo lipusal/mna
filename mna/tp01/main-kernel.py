@@ -83,9 +83,11 @@ print("It took " + str(time.time()-t0) + "seconds ")
 # eigenvalues, subEigenFaces = np.linalg.eig(train_images.dot(train_images.T))
 # eigenfaces = train_images.T.dot(subEigenFaces.T).T
 # eigenvalues, eigenfaces = np.linalg.eigh(train_kernel)
-# Eigenvalues/vectors are returned in ascending order, flip to descending
-# eigenvalues = np.flipud(eigenvalues)
-# eigenfaces = np.fliplr(eigenfaces)
+# Get the keys that would sort eigenvalues by descending absolute value
+keys = np.argsort(np.absolute(eigenvalues))[::-1]
+# Sort eigenvalues, and their corresponding eigenfaces, by these keys
+eigenvalues = np.absolute([eigenvalues[key] for key in keys])
+eigenfaces = np.asarray([eigenfaces[:, key] for key in keys])
 
 # Normalize eigenfaces (i.e. divide by their norm)
 for i in range(len(eigenfaces)):
@@ -194,6 +196,7 @@ while(True):
         newImgKernel = newImgKernel - np.dot(ones_camera, train_kernel) - np.dot(newImgKernel, ones_train) + np.dot(
             ones_camera, np.dot(train_kernel, ones_train))
         projectedNewImg = np.dot(newImgKernel, eigenfaces)
+        projectedNewImg = projectedNewImg[:, 0:used_eigenfaces]
         name = clf.predict(projectedNewImg)
         cv2.putText(frame, name[0], (x, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 4)
 
