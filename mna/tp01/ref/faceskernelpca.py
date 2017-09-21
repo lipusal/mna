@@ -46,7 +46,7 @@ imno = 0
 per  = 0
 for dire in onlydirs:
     for k in range(trnperper,10):
-        a = im.imread(mypath + dire + '/{}'.format(k) + '.pgm')
+        a = im.imread(mypath + dire + '/{}'.format(k+1) + '.pgm')
         imagetst[imno,:]  = (np.reshape(a,[1,areasize])-127.5)/127.5
         persontst[imno,0] = per
         imno += 1
