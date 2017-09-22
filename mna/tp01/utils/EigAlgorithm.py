@@ -89,6 +89,28 @@ class EigAlgorithm:
         return np.diagonal(eig_val), eig_vec
 
     @staticmethod
+    def wilkinsonEigNoHess (matrix, method=QRAlgorithm.GramSchmidt):
+        n = matrix.shape[0]
+        orig = copy(matrix)
+
+        eig_val = np.zeros(n)
+        print("Calculating eigVal")
+        t0= time.time()
+        EigAlgorithm.rec3Wilkinson(matrix, method, eig_val)
+        print("IT took " + str(time.time()-t0))
+
+        eig_vec = np.zeros((n,n))
+        print("Calculating eigVec")
+        t0= time.time()
+        for i in range(len(eig_val)):
+            aux = EigAlgorithm.InverseIteration(matrix, eig_val[i])
+            eig_vec[:, i] = aux.reshape(n)
+
+        print("IT took " + str(time.time()-t0))
+
+        return eig_val, eig_vec
+
+    @staticmethod
     def wilkinsonEig (matrix, method=QRAlgorithm.GramSchmidt):
         n = matrix.shape[0]
         orig = copy(matrix)
@@ -101,7 +123,7 @@ class EigAlgorithm:
         eig_val = np.zeros(n)
         print("Calculating eigVal")
         t0= time.time()
-        EigAlgorithm.rec2Wilkinson(H, method, eig_val)
+        EigAlgorithm.rec3Wilkinson(H, method, eig_val)
         print("IT took " + str(time.time()-t0))
 
         eig_vec = np.zeros((n,n))
@@ -119,15 +141,16 @@ class EigAlgorithm:
     def recWilkinson(matrix, method, answer):
         A = matrix
         n = A[0].size
-        print(n)
         if n==1:
             answer[0] = A[0][0]
         else:
             I = np.identity(n)
-            while abs(A[n-1,n-2]) > __precision__ :
+            lastVal = A[n-1,n-1] + 1
+            while abs(lastVal - A[n-1,n-1]) > __precision__  :
                 mu = EigAlgorithm.wilkinsonShift(A[n-2,n-2], A[n-1,n-1], A[n-2,n-1])
                 Q,R = method(A-mu*I)
                 A = R.dot(Q) + I*mu
+                lastVal = A[n-1,n-1]
 
             answer[n-1] = A[n-1,n-1]
             EigAlgorithm.recWilkinson(A[0:n-1, 0:n-1], method, answer)
@@ -139,28 +162,29 @@ class EigAlgorithm:
         if n==1:
             answer[0] = A[0][0]
         else:
-            #
-            # mid = n//2
-            # i=1
-            # while i<n:
-            #     search = int(mid - (i//2 * (-1 + 2*(i%2))))
-            #     # search = i
-            #     if abs(A[search, search-1])<0.1:
-            #         if search==n-1 :
-            #             answer[search] = A[search,search]
-            #             EigAlgorithm.rec2Wilkinson(A[0:search, 0:search], method, answer)
-            #             return
-            #
-            #         if search == 1:
-            #             answer[search] = A[search,search]
-            #             answer[0] = A[0,0]
-            #             EigAlgorithm.rec2Wilkinson(A[2:n, 2:n], method, answer[2:n])
-            #             return
-            #
-            #         EigAlgorithm.rec2Wilkinson(A[0:search, 0:search],method, answer[0:search])
-            #         EigAlgorithm.rec2Wilkinson(A[search:n, search:n],method, answer[search:n])
-            #         return
-            #     i+=1
+
+            mid = n//2
+            i=1
+            while i<n:
+                search = int(mid - (i//2 * (-1 + 2*(i%2))))
+                # search = i
+                if abs(A[search, search-1])<0.1:
+                    # print("Found " + str(search) + "of " + str(n))
+                    if search==n-1 :
+                        answer[search] = A[search,search]
+                        EigAlgorithm.rec2Wilkinson(A[0:search, 0:search], method, answer)
+                        return
+
+                    if search == 1:
+                        answer[search] = A[search,search]
+                        answer[0] = A[0,0]
+                        EigAlgorithm.rec2Wilkinson(A[2:n, 2:n], method, answer[2:n])
+                        return
+
+                    EigAlgorithm.rec2Wilkinson(A[0:search, 0:search],method, answer[0:search])
+                    EigAlgorithm.rec2Wilkinson(A[search:n, search:n],method, answer[search:n])
+                    return
+                i+=1
 
 
             lastVal = A[n-1,n-1] + 1
@@ -173,6 +197,50 @@ class EigAlgorithm:
 
             answer[n-1] = A[n-1,n-1]
             EigAlgorithm.rec2Wilkinson(A[0:n-1, 0:n-1], method, answer)
+
+
+    @staticmethod
+    def rec3Wilkinson(matrix, method, answer):
+        A = matrix
+        n = np.shape(A)[0]
+        if n==0:
+            return
+        if n==1:
+            answer[0] = A[0][0]
+        else:
+
+            lastVal = A[n-1,n-1] + 1
+            I = np.identity(n)
+            while abs(lastVal - A[n-1,n-1]) > __precision__ :
+                mu = EigAlgorithm.wilkinsonShift(A[n-2,n-2], A[n-1,n-1], A[n-2,n-1])
+                Q,R = method(A-mu*I)
+                A = R.dot(Q) + I*mu
+                mid = n//2
+                i=0
+                while i<n:
+                    # search = int(mid - (i//2 * (-1 + 2*(i%2))))
+                    search = i
+                    if abs(lastVal - A[search,search]) < 0.1 :
+                        # print("Found " + str(search) + "of " + str(n))
+                        if search==n-1 :
+                            answer[search] = A[search,search]
+                            EigAlgorithm.rec3Wilkinson(A[0:search, 0:search], method, answer)
+                            return
+
+                        if search == 1:
+                            answer[search] = A[search,search]
+                            answer[0] = A[0,0]
+                            EigAlgorithm.rec3Wilkinson(A[2:n, 2:n], method, answer[2:n])
+                            return
+
+                        EigAlgorithm.rec3Wilkinson(A[0:search, 0:search],method, answer[0:search])
+                        EigAlgorithm.rec3Wilkinson(A[search:n, search:n],method, answer[search:n])
+                        return
+                    i+=1
+                lastVal = A[n-1,n-1]
+
+            answer[n-1] = A[n-1,n-1]
+            EigAlgorithm.rec3Wilkinson(A[0:n-1, 0:n-1], method, answer)
 
 
     @staticmethod
