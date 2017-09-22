@@ -1,10 +1,7 @@
 import argparse
-import numpy as np
 from mna.tp01.utils.Images import *
-from mna.tp01.utils.QRAlgorithm import *
 from mna.tp01.utils.EigAlgorithm import *
 import matplotlib.pyplot as plt
-# import matplotlib.pyplot as plt
 import os
 from sklearn import svm
 import time
@@ -38,7 +35,6 @@ if args.verbose:
     print("Normalizing pictures...")
 
 # Make numbers easier to play with
-# TODO: Define whether ** 2 stays or not
 train_images = (np.asarray(train_images) / 255.0)
 test_images = (np.asarray(test_images) / 255.0)
 
@@ -51,19 +47,12 @@ test_images -= mean_face
 
 
 # Calculate covariance matrix
-# cov = np.cov(images, rowvar=True)
-# eigenvalues, eigenfaces = np.linalg.eig(cov)
-
 if args.verbose:
     print("Finding eigenfaces...")
 
-# TODO: Use our functions for this
-# _, singular_values, eigenfaces2 = np.linalg.svd(train_images, full_matrices=False)
-# eigenvalues = singular_values ** 2
 t0 = time.time()
 eigenvalues, subEigenFaces = EigAlgorithm.wilkinsonEig(train_images.dot(train_images.T), QRAlgorithm.HouseHolder)
-# eigenvalues, subEigenFaces = QRAlgorithm.wilkinsonEig(QRAlgorithm.HessenbergReduction(train_images.dot(train_images.T)), HouseHolder.qr)
-print("It took " + str(time.time()-t0) + "seconds ")
+print("Elapsed time " + str(time.time()-t0) + " seconds ")
 # eigenvalues, subEigenFaces = np.linalg.eig(train_images.dot(train_images.T))
 eigenfaces = train_images.T.dot(subEigenFaces.T).T
 
@@ -151,7 +140,6 @@ eigen3 = (np.reshape(eigenfaces[2,:],[versize,horsize]))*255
 fig, axes = plt.subplots(1,1)
 axes.imshow(eigen2,cmap='gray')
 fig.suptitle('Tercera autocara')
-print(test_classes)
 
 clf.fit(projected_train_imgs, train_classes)
 classifications = clf.score(projected_test_imgs, test_classes)
@@ -160,7 +148,6 @@ print("Classification accuracy with %i eigenfaces: %g%%" % (used_eigenfaces, cla
 cascPath = "./open_cv/haarcascade_frontalface_default.xml"
 faceCascade = cv2.CascadeClassifier(cascPath)
 
-print(os.path.dirname(os.path.realpath(__file__)))
 i=0
 video_capture = cv2.VideoCapture(0)
 while(True):

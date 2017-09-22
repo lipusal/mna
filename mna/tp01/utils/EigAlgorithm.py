@@ -15,8 +15,7 @@ class EigAlgorithm:
         n = len(matrix)
         eye = np.eye(n)
         eye = eye*eigenvalue
-        # eigenvector = np.random.rand(1,n)
-        eigenvector = np.ones((1,n)).T
+        eigenvector = np.ones((1, n)).T
         inv = np.linalg.inv(matrix - eye)
         aux = np.dot(inv, eigenvector)
         aux = aux/np.linalg.norm(aux)
@@ -29,7 +28,7 @@ class EigAlgorithm:
 
         return eigenvector
 
-# This is the most basic algorithm
+    # This is the most basic algorithm
     # checks when the subdiagonal converges to 0
     # Calculate the eigenVectors multiplying every iteration
     @staticmethod
@@ -94,19 +93,14 @@ class EigAlgorithm:
         orig = copy(matrix)
 
         eig_val = np.zeros(n)
-        print("Calculating eigVal")
-        t0= time.time()
+        print("Calculating eigenValues")
         EigAlgorithm.rec3Wilkinson(matrix, method, eig_val)
-        print("IT took " + str(time.time()-t0))
 
         eig_vec = np.zeros((n,n))
-        print("Calculating eigVec")
-        t0= time.time()
+        print("Calculating eigenVectors")
         for i in range(len(eig_val)):
             aux = EigAlgorithm.InverseIteration(matrix, eig_val[i])
             eig_vec[:, i] = aux.reshape(n)
-
-        print("IT took " + str(time.time()-t0))
 
         return eig_val, eig_vec
 
@@ -114,26 +108,19 @@ class EigAlgorithm:
     def wilkinsonEig (matrix, method=QRAlgorithm.GramSchmidt):
         n = matrix.shape[0]
         orig = copy(matrix)
-
-        t0 = time.time()
         print("Reducing to hessenberg")
         H, Q = Hessenberg.HessenbergReductionWithReflector(matrix)
-        print("IT TOOK " + str(time.time()-t0))
 
         eig_val = np.zeros(n)
-        print("Calculating eigVal")
-        t0= time.time()
+
+        print("Calculating eigenValues")
         EigAlgorithm.rec3Wilkinson(H, method, eig_val)
-        print("IT took " + str(time.time()-t0))
 
         eig_vec = np.zeros((n,n))
-        print("Calculating eigVec")
-        t0= time.time()
+        print("Calculating eigenVectors")
         for i in range(len(eig_val)):
                 aux = EigAlgorithm.InverseIteration(H, eig_val[i])
                 eig_vec[:, i] = aux.reshape(n)
-
-        print("IT took " + str(time.time()-t0))
 
         return eig_val, eig_vec.dot(Q)
 
@@ -169,7 +156,6 @@ class EigAlgorithm:
                 search = int(mid - (i//2 * (-1 + 2*(i%2))))
                 # search = i
                 if abs(A[search, search-1])<0.1:
-                    # print("Found " + str(search) + "of " + str(n))
                     if search==n-1 :
                         answer[search] = A[search,search]
                         EigAlgorithm.rec2Wilkinson(A[0:search, 0:search], method, answer)
@@ -218,10 +204,9 @@ class EigAlgorithm:
                 mid = n//2
                 i=0
                 while i<n:
-                    # search = int(mid - (i//2 * (-1 + 2*(i%2))))
-                    search = i
+                    search = int(mid - (i//2 * (-1 + 2*(i%2))))
+                    # search = i
                     if abs(lastVal - A[search,search]) < 0.1 :
-                        # print("Found " + str(search) + "of " + str(n))
                         if search==n-1 :
                             answer[search] = A[search,search]
                             EigAlgorithm.rec3Wilkinson(A[0:search, 0:search], method, answer)

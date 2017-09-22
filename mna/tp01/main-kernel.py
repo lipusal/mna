@@ -159,7 +159,6 @@ print("Classification accuracy with %i eigenfaces: %g%%" % (used_eigenfaces, cla
 cascPath = "./open_cv/haarcascade_frontalface_default.xml"
 faceCascade = cv2.CascadeClassifier(cascPath)
 
-print(os.path.dirname(os.path.realpath(__file__)))
 i=0
 video_capture = cv2.VideoCapture(0)
 ones_camera = np.ones([1, num_train_pics]) / num_train_pics
