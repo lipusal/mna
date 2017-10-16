@@ -2,6 +2,7 @@ import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
+from mna.tp02.fft import original
 
 parser = argparse.ArgumentParser(description="Heart rate monitor. Uses Fourier Transform to estimate beats per minute"
                                              "based off of a video.")
@@ -71,9 +72,10 @@ g = g[0, 0:n] - np.mean(g[0, 0:n])
 b = b[0, 0:n] - np.mean(b[0, 0:n])
 
 # Apply Fast Fourier Transform
-R = np.abs(np.fft.fftshift(np.fft.fft(r))) ** 2
-G = np.abs(np.fft.fftshift(np.fft.fft(g))) ** 2
-B = np.abs(np.fft.fftshift(np.fft.fft(b))) ** 2
+R = np.abs(original.fft(r))
+G = np.abs(original.fft(g))
+B = np.abs(original.fft(b))
+
 
 plt.plot(60 * f, R)
 plt.xlim(0, 200)
