@@ -16,7 +16,7 @@ parser.add_argument("--time", "-t", help="Print elapsed program time", action="s
 args = parser.parse_args()
 
 if args.time:
-    import mna.util.Timer
+    import mna.util.timer
 
 # noinspection PyArgumentList
 video = cv2.VideoCapture(args.video)

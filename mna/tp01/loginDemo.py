@@ -28,7 +28,7 @@ args = parser.parse_args()
 
 soundEnabled = False
 if args.time:
-    import mna.tp01.utils.Timer
+    import mna.util.timer
 
 if args.sound:
     soundEnabled = True

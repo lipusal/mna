@@ -22,7 +22,7 @@ parser.add_argument("--time", "-t", help="Print elapsed program time", action="s
 args = parser.parse_args()
 
 if args.time:
-    import mna.tp01.utils.Timer
+    import mna.util.timer
 
 # Open images and separate them in training and testing groups
 if args.verbose:
