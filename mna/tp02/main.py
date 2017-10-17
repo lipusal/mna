@@ -2,7 +2,7 @@ import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
-from mna.tp02.fft import original
+from mna.tp02.fft import original, base_recursive
 
 parser = argparse.ArgumentParser(description="Heart rate monitor. Uses Fourier Transform to estimate beats per minute"
                                              "based off of a video.")
@@ -71,10 +71,15 @@ r = r[0, 0:n] - np.mean(r[0, 0:n])
 g = g[0, 0:n] - np.mean(g[0, 0:n])
 b = b[0, 0:n] - np.mean(b[0, 0:n])
 
-# Apply Fast Fourier Transform
-R = np.abs(original.fft(r))
-G = np.abs(original.fft(g))
-B = np.abs(original.fft(b))
+# Apply Fast Fourier Transform with the desired algorithm
+# TODO: Use our own
+fft = original.fft
+fftshift = original.fftshift
+
+R = np.abs(fftshift(fft(r))) ** 2
+r2 = np.abs(fftshift(base_recursive.fft(r))) ** 2   # For comparing TODO delete later
+G = np.abs(fftshift(fft(g))) ** 2
+B = np.abs(fftshift(fft(b))) ** 2
 
 
 plt.plot(60 * f, R)

@@ -5,4 +5,8 @@ import numpy as np
 
 
 def fft(data):
-    return np.abs(np.fft.fftshift(np.fft.fft(data))) ** 2
+    return np.fft.fft(data)
+
+
+def fftshift(data):
+    return np.fft.fftshift(data)
