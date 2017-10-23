@@ -35,7 +35,7 @@ if not 0 < args.size < min(WIDTH, HEIGHT):
     exit(1)
 
 if args.verbose:
-    print("Read %i frames of %ix%i each; FPS = %g" % (NUM_FRAMES, WIDTH, HEIGHT, FPS))
+    print("Opened video with %i frames of %ix%i each; FPS = %g" % (NUM_FRAMES, WIDTH, HEIGHT, FPS))
 
 # R,G,B means for each frame
 r = np.zeros((1, NUM_FRAMES))
@@ -48,6 +48,10 @@ right_bound = WIDTH//2 + SIZE//2
 upper_bound = HEIGHT//2 + SIZE//2
 lower_bound = HEIGHT//2 - SIZE//2
 k = 0
+
+if args.verbose:
+    print("Reading %i frames..." % NUM_FRAMES, end='', flush=True)
+
 while video.isOpened():
     did_read, frame = video.read()
 
@@ -62,6 +66,9 @@ while video.isOpened():
 
 video.release()             # Close the video
 cv2.destroyAllWindows()     # Close any windows opened behind the scenes
+if args.verbose:
+    print("done")
+    print("Normalizing data...")
 
 n = 1024
 f = np.linspace(-n / 2, n / 2 - 1, n) * FPS / n
@@ -72,15 +79,24 @@ g = g[0, 0:n] - np.mean(g[0, 0:n])
 b = b[0, 0:n] - np.mean(b[0, 0:n])
 
 # Apply Fast Fourier Transform with the desired algorithm
-# TODO: Use our own
-fft = original.fft
-fftshift = original.fftshift
+# TODO: Pass variant as parameter?
+fft = base_recursive.fft
+fftshift = base_recursive.fftshift
+
+if args.verbose:
+    print("Applying FFT...", end='')
 
 R = np.abs(fftshift(fft(r))) ** 2
-r2 = np.abs(fftshift(base_recursive.fft(r))) ** 2   # For comparing TODO delete later
 G = np.abs(fftshift(fft(g))) ** 2
 B = np.abs(fftshift(fft(b))) ** 2
+# Originals for comparing TODO remove when done
+r2 = np.abs(original.fftshift(original.fft(r))) ** 2
+g2 = np.abs(original.fftshift(original.fft(g))) ** 2
+b2 = np.abs(original.fftshift(original.fft(b))) ** 2
 
+if args.verbose:
+    print("done")
+    print("Max error against original FFT: %g" % np.max(np.abs([R-r2, G-g2, B-b2])))
 
 plt.plot(60 * f, R)
 plt.xlim(0, 200)
