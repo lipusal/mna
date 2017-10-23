@@ -23,4 +23,7 @@ def fft(data):
         [even_half[k] + odd_terms[k] for k in range(n // 2)] + \
         [even_half[k] - odd_terms[k] for k in range(n // 2)]
 
-# TODO FFT shift?
+
+def fftshift(data):
+    n = len(data)
+    return data[n//2:n] + data[0:n//2]
