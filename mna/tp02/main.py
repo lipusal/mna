@@ -37,7 +37,7 @@ if not 0 < args.size < min(WIDTH, HEIGHT):
     exit(1)
 
 if args.verbose:
-    print("Opened video with %i frames of %ix%i each; FPS = %g" % (NUM_FRAMES, WIDTH, HEIGHT, FPS))
+    print("Opened video with %i frames (%fs) of %ix%i each; FPS = %g" % (NUM_FRAMES, NUM_FRAMES/FPS, WIDTH, HEIGHT, FPS))
 
 # R,G,B means for each frame
 r = np.zeros((1, NUM_FRAMES))
@@ -62,9 +62,9 @@ while video.isOpened():
 
     if did_read:
         if start_time <= current_time <= end_time:
-            r[0, current_frame] = np.mean(frame[left_bound:right_bound, lower_bound:upper_bound, 0])
+            b[0, current_frame] = np.mean(frame[left_bound:right_bound, lower_bound:upper_bound, 0])
             g[0, current_frame] = np.mean(frame[left_bound:right_bound, lower_bound:upper_bound, 1])
-            b[0, current_frame] = np.mean(frame[left_bound:right_bound, lower_bound:upper_bound, 2])
+            r[0, current_frame] = np.mean(frame[left_bound:right_bound, lower_bound:upper_bound, 2])
         elif current_time > end_time:
             break
     # print(k)
@@ -79,7 +79,14 @@ if args.verbose:
     print("done")
     print("Normalizing data...")
 
-n = 1024
+# Plot RGB across simulation
+x = np.arange(NUM_FRAMES)
+plt.plot(x, r[0], color='red')
+plt.plot(x, g[0], color='green')
+plt.plot(x, b[0], color='blue')
+
+# Discretize simulation interval in N parts, where N is the biggest power of 2 that fits in NUM_FRAMES
+n = int(2 ** np.floor(np.log2(NUM_FRAMES)))
 f = np.linspace(-n / 2, n / 2 - 1, n) * FPS / n
 
 # Subtract mean to each color (the first index is necessary because these have shape (1, 1843) not (,1843) -- yes, there is no number before the second comma
@@ -117,4 +124,22 @@ plt.xlabel("frecuencia [1/minuto]")
 plt.plot(60 * f, B, color='blue')
 plt.xlim(0, 200)
 
-print("Frecuencia cardíaca: ", abs(f[np.argmax(G)]) * 60, " pulsaciones por minuto")
+# Normal human heartbeat is within 40, 120 BPM. Only study frequencies within that window
+# TODO: Shorten
+R_trim, G_trim, B_trim = [], [], []
+for i in range(len(f)):
+    freq = f[i] * 60
+    if 40 <= freq <= 120:
+        R_trim.append(R[i])
+        G_trim.append(G[i])
+        B_trim.append(B[i])
+    else:
+        R_trim.append(0)
+        G_trim.append(0)
+        B_trim.append(0)
+
+print("Frecuencia cardíaca (R): ", abs(f[np.argmax(R_trim)]) * 60, " pulsaciones por minuto")
+print("Frecuencia cardíaca (G): ", abs(f[np.argmax(G_trim)]) * 60, " pulsaciones por minuto")
+print("Frecuencia cardíaca: (B)", abs(f[np.argmax(B_trim)]) * 60, " pulsaciones por minuto")
+
+print("Done")
