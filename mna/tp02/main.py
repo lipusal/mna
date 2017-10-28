@@ -10,6 +10,8 @@ parser.add_argument("video", help="Video to analyze", type=str)
 parser.add_argument("--size", "-s", help="Size of observation window, in pixels. Window is always centered. Default "
                                          "is 30",
                     type=int, default=30)
+parser.add_argument("--start", help="Video time at which to start capturing frames. Decimal.", type=float, default=0)
+parser.add_argument("--end", help="Video time at which to stop capturing frames. Decimal.", type=float, default=-1)
 parser.add_argument("--verbose", "-v", help="Print verbose information while running", action="store_true",
                     default=False)
 parser.add_argument("--time", "-t", help="Print elapsed program time", action="store_true", default=False)
@@ -47,22 +49,29 @@ left_bound = WIDTH//2 - SIZE//2
 right_bound = WIDTH//2 + SIZE//2
 upper_bound = HEIGHT//2 + SIZE//2
 lower_bound = HEIGHT//2 - SIZE//2
-k = 0
+current_frame = 0
+current_time = 0
+start_time = args.start
+end_time = args.end if args.end != -1 else NUM_FRAMES/FPS
 
 if args.verbose:
-    print("Reading %i frames..." % NUM_FRAMES, end='', flush=True)
+    print("Reading %i frames..." % ((end_time - start_time) * FPS), end='', flush=True)
 
 while video.isOpened():
     did_read, frame = video.read()
 
     if did_read:
-        r[0, k] = np.mean(frame[left_bound:right_bound, lower_bound:upper_bound, 0])
-        g[0, k] = np.mean(frame[left_bound:right_bound, lower_bound:upper_bound, 1])
-        b[0, k] = np.mean(frame[left_bound:right_bound, lower_bound:upper_bound, 2])
+        if start_time <= current_time <= end_time:
+            r[0, current_frame] = np.mean(frame[left_bound:right_bound, lower_bound:upper_bound, 0])
+            g[0, current_frame] = np.mean(frame[left_bound:right_bound, lower_bound:upper_bound, 1])
+            b[0, current_frame] = np.mean(frame[left_bound:right_bound, lower_bound:upper_bound, 2])
+        elif current_time > end_time:
+            break
     # print(k)
     else:
         break
-    k += 1
+    current_frame += 1
+    current_time += 1/FPS
 
 video.release()             # Close the video
 cv2.destroyAllWindows()     # Close any windows opened behind the scenes
@@ -98,14 +107,14 @@ if args.verbose:
     print("done")
     print("Max error against original FFT: %g" % np.max(np.abs([R-r2, G-g2, B-b2])))
 
-plt.plot(60 * f, R)
+plt.plot(60 * f, R, color='red')
 plt.xlim(0, 200)
 
-plt.plot(60 * f, G)
+plt.plot(60 * f, G, color='green')
 plt.xlim(0, 200)
 plt.xlabel("frecuencia [1/minuto]")
 
-plt.plot(60 * f, B)
+plt.plot(60 * f, B, color='blue')
 plt.xlim(0, 200)
 
 print("Frecuencia cardíaca: ", abs(f[np.argmax(G)]) * 60, " pulsaciones por minuto")
