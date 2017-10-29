@@ -2,6 +2,6 @@
 __pycache__/
 output*.txt
 
-mna/tp01/\.DS_Store
+.DS_Store
 
-\.DS_Store
+mna/tp02/out
