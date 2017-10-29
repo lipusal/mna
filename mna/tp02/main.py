@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 from mna.tp02.fft import original, base_recursive
+from mna.tp02.filter import heartrate
 
 parser = argparse.ArgumentParser(description="Heart rate monitor. Uses Fourier Transform to estimate beats per minute"
                                              "based off of a video.")
@@ -125,40 +126,35 @@ plt.suptitle("FFT para cada Color")
 plt.xlabel("Frecuencia [pulsaciones/minuto]")
 plt.ylabel("60 * abs(fftshift(fft(color))) ^ 2")
 
-# X limits of plotted FFT
-FFT_PLOT_LEFT, FFT_PLOT_RIGHT = 0, 200
-# Normal human heartbeat is within 40, 120 BPM. Only look FFT maxima in this range.
-FFT_LEFT, FFT_RIGHT = 40, 120
+# ######################################################################################################################
+# Plot the entire observed frequency range, but analyze a filtered version of it
+# ######################################################################################################################
+# Plot limits
+PLOT_LOWER, PLOT_UPPER = 0, 200
+# Analyzed limits (normal human heartbeat range)
+LOWER, UPPER = 40, 120
 
 plt.plot(60 * f, R, color='red')
-plt.xlim(FFT_PLOT_LEFT, FFT_PLOT_RIGHT)
+plt.xlim(PLOT_LOWER, PLOT_UPPER)
 plt.plot(60 * f, G, color='green')
-plt.xlim(FFT_PLOT_LEFT, FFT_PLOT_RIGHT)
+plt.xlim(PLOT_LOWER, PLOT_UPPER)
 plt.plot(60 * f, B, color='blue')
-plt.xlim(FFT_PLOT_LEFT, FFT_PLOT_RIGHT)
-
+plt.xlim(PLOT_LOWER, PLOT_UPPER)
 plt.xlabel("Frecuencia [pulsaciones/minuto]")
-# Dashed vertical lines to show where we're looking
-plt.axvline(x=FFT_LEFT, linestyle="--")
-plt.axvline(x=FFT_RIGHT, linestyle="--")
+# Vertical lines for analyzed range
+plt.axvline(x=LOWER, linestyle="--")
+plt.axvline(x=UPPER, linestyle="--")
 
-# TODO: Shorten
-R_trim, G_trim, B_trim = [], [], []
-for i in range(len(f)):
-    freq = f[i] * 60
-    if 40 <= freq <= 120:
-        R_trim.append(R[i])
-        G_trim.append(G[i])
-        B_trim.append(B[i])
-    else:
-        R_trim.append(0)
-        G_trim.append(0)
-        B_trim.append(0)
+# Filter frequencies
+R_filtered = heartrate.filter(R, f * 60, UPPER, LOWER)
+G_filtered = heartrate.filter(G, f * 60, UPPER, LOWER)
+B_filtered = heartrate.filter(B, f * 60, UPPER, LOWER)
 
-# FFT maxima = most similarity, in frequency, to a sinusoid. FFT maxima * 60 = most similarity in beats per minute
-fft_max_r = np.argmax(R_trim)   # Frequency at which maximum occurs
-fft_max_g = np.argmax(G_trim)
-fft_max_b = np.argmax(B_trim)
+
+# FFT maximum = most similarity, in frequency, to a sinusoid. FFT maximum * 60 = most similarity in beats per minute
+fft_max_r = np.argmax(R_filtered)   # Frequency at which maximum occurs
+fft_max_g = np.argmax(G_filtered)
+fft_max_b = np.argmax(B_filtered)
 heartrate_r = abs(f[fft_max_r]) * 60
 heartrate_g = abs(f[fft_max_g]) * 60
 heartrate_b = abs(f[fft_max_b]) * 60
