@@ -27,7 +27,7 @@ if not path.exists(args.output):
     os.makedirs(args.output)
 
 # Create CSV file headers
-csv = open(path.normpath(path.join(args.output, "output.csv")), "w")
+csv = open(path.normpath(path.join(args.output, "heart_rates.csv")), "w")
 csv.write("Duration,Window Size,R,G,B\n")
 
 print("******************************************************************")
