@@ -79,8 +79,13 @@ if args.verbose:
     print("done")
     print("Normalizing data...")
 
-# Plot RGB across simulation
-x = np.arange(NUM_FRAMES)
+# Plot RGB across video
+plt.figure("R, G, B en el Video")
+plt.suptitle("R, G, B en el Video")
+plt.xlabel("# Frame")
+plt.ylabel("Valor")
+
+x = np.arange(start_time*FPS, end_time*FPS)
 plt.plot(x, r[0], color='red')
 plt.plot(x, g[0], color='green')
 plt.plot(x, b[0], color='blue')
@@ -114,17 +119,29 @@ if args.verbose:
     print("done")
     print("Max error against original FFT: %g" % np.max(np.abs([R-r2, G-g2, B-b2])))
 
+# Plot FFT result
+plt.figure("FFT para cada Color")
+plt.suptitle("FFT para cada Color")
+plt.xlabel("Frecuencia [pulsaciones/minuto]")
+plt.ylabel("60 * abs(fftshift(fft(color))) ^ 2")
+
+# X limits of plotted FFT
+FFT_PLOT_LEFT, FFT_PLOT_RIGHT = 0, 200
+# Normal human heartbeat is within 40, 120 BPM. Only look FFT maxima in this range.
+FFT_LEFT, FFT_RIGHT = 40, 120
+
 plt.plot(60 * f, R, color='red')
-plt.xlim(0, 200)
-
+plt.xlim(FFT_PLOT_LEFT, FFT_PLOT_RIGHT)
 plt.plot(60 * f, G, color='green')
-plt.xlim(0, 200)
-plt.xlabel("frecuencia [1/minuto]")
-
+plt.xlim(FFT_PLOT_LEFT, FFT_PLOT_RIGHT)
 plt.plot(60 * f, B, color='blue')
-plt.xlim(0, 200)
+plt.xlim(FFT_PLOT_LEFT, FFT_PLOT_RIGHT)
 
-# Normal human heartbeat is within 40, 120 BPM. Only study frequencies within that window
+plt.xlabel("Frecuencia [pulsaciones/minuto]")
+# Dashed vertical lines to show where we're looking
+plt.axvline(x=FFT_LEFT, linestyle="--")
+plt.axvline(x=FFT_RIGHT, linestyle="--")
+
 # TODO: Shorten
 R_trim, G_trim, B_trim = [], [], []
 for i in range(len(f)):
@@ -138,8 +155,25 @@ for i in range(len(f)):
         G_trim.append(0)
         B_trim.append(0)
 
-print("Frecuencia cardíaca (R): ", abs(f[np.argmax(R_trim)]) * 60, " pulsaciones por minuto")
-print("Frecuencia cardíaca (G): ", abs(f[np.argmax(G_trim)]) * 60, " pulsaciones por minuto")
-print("Frecuencia cardíaca: (B)", abs(f[np.argmax(B_trim)]) * 60, " pulsaciones por minuto")
+# FFT maxima = most similarity, in frequency, to a sinusoid. FFT maxima * 60 = most similarity in beats per minute
+fft_max_r = np.argmax(R_trim)   # Frequency at which maximum occurs
+fft_max_g = np.argmax(G_trim)
+fft_max_b = np.argmax(B_trim)
+heartrate_r = abs(f[fft_max_r]) * 60
+heartrate_g = abs(f[fft_max_g]) * 60
+heartrate_b = abs(f[fft_max_b]) * 60
+print("Frecuencia cardíaca (R): ", heartrate_r, " pulsaciones por minuto")
+print("Frecuencia cardíaca (G): ", heartrate_g, " pulsaciones por minuto")
+print("Frecuencia cardíaca (B): ", heartrate_b, " pulsaciones por minuto")
+# Plot maxima as points
+plt.plot(heartrate_r, R[fft_max_r], marker="o", color="red")
+plt.plot(heartrate_g, G[fft_max_g], marker="o", color="green")
+plt.plot(heartrate_b, B[fft_max_b], marker="o", color="blue")
 
-print("Done")
+
+# Graph windows close when the program finishes. Block until they are closed.
+# Print run time first if necessary
+if args.time:
+    mna.util.timer.endlog()
+# Show graphs
+plt.show(block=True)

@@ -25,6 +25,7 @@ def endlog():
     end = time()
     elapsed = end - start
     log("Timer End", seconds_to_str(elapsed))
+    atexit.unregister(endlog)   # Don't print end time again (we may have been called before actual exit)
 
 
 def now():
