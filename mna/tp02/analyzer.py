@@ -53,15 +53,17 @@ for duration in DURATIONS:
             print("Couldn't open video. Aborting.")
             exit(1)
 
+        # Override size
+        args.size = size
+
         SIZE = args.size
         WIDTH = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
         HEIGHT = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
         NUM_FRAMES = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
         FPS = video.get(cv2.CAP_PROP_FPS)
 
-        # Override params with current params
+        # Override duration
         args.end = duration
-        args.size = size
 
         if not 0 < args.size < min(WIDTH, HEIGHT):
             print("Invalid size. Allowed values for this video are between 0 and %i, both ends exclusive." % min(WIDTH, HEIGHT))
